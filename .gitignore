@@ -1,0 +1,65 @@
+﻿### IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+### Maven / Java ###
+**/target/
+**/.mvn/
+*.class
+*.jar
+*.war
+*.log
+HELP.md
+
+### Maven Wrapper (file generati) ###
+roadToUninaBackend/.mvn/wrapper/maven-wrapper.jar
+
+### Node / Angular ###
+**/node_modules/
+**/dist/
+**/tmp/
+**/out-tsc/
+**/.angular/
+*.sublime-workspace
+
+### Angular specific ###
+roadToUninaFrontend/.angular/
+roadToUninaFrontend/dist/
+
+### IDE - VS Code ###
+.vscode/
+roadToUninaFrontend/.vscode/
+.history/
+
+### IDE - Eclipse/STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### Environment ###
+.env
+.env.local
+.env.*.local
+
+### OS files ###
+.DS_Store
+Thumbs.db
+
+### Coverage / test reports ###
+/coverage/
+__screenshots__/
+testem.log
+connect.lock
+libpeerconnection.log
+
+### Build artifacts ###
+.sass-cache/
+/bazel-out/
+/typings/
