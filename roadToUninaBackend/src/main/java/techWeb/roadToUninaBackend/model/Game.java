@@ -24,7 +24,7 @@ public class Game {
     private String startUrl;
 
     @Column(name = "end_url", nullable = false, length = 500)
-    private String endUrl = "https://www.unina.it/";
+    private String endUrl;
 
     @Column(name = "number_of_steps")
     private Integer numberOfSteps = 0;
@@ -34,6 +34,9 @@ public class Game {
 
     @Column(nullable = false)
     private Boolean completed = false;
+
+    @Column(nullable = false)
+    private Boolean active = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
