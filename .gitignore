@@ -5,6 +5,23 @@
 *.ipr
 out/
 
+### Eclipse/STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
 ### Maven / Java ###
 **/target/
 **/.mvn/
@@ -15,7 +32,7 @@ out/
 HELP.md
 
 ### Maven Wrapper (file generati) ###
-roadToUninaBackend/.mvn/wrapper/maven-wrapper.jar
+**/maven-wrapper.jar
 
 ### Node / Angular ###
 **/node_modules/
@@ -23,25 +40,19 @@ roadToUninaBackend/.mvn/wrapper/maven-wrapper.jar
 **/tmp/
 **/out-tsc/
 **/.angular/
+**/.angular/cache
 *.sublime-workspace
-
-### Angular specific ###
-roadToUninaFrontend/.angular/
-roadToUninaFrontend/dist/
 
 ### IDE - VS Code ###
 .vscode/
-roadToUninaFrontend/.vscode/
 .history/
 
-### IDE - Eclipse/STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+### VS Code - eccezioni (file di configurazione condivisi) ###
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
 
 ### Environment ###
 .env
@@ -53,7 +64,7 @@ roadToUninaFrontend/.vscode/
 Thumbs.db
 
 ### Coverage / test reports ###
-/coverage/
+**/coverage/
 __screenshots__/
 testem.log
 connect.lock
@@ -63,3 +74,9 @@ libpeerconnection.log
 .sass-cache/
 /bazel-out/
 /typings/
+npm-debug.log
+yarn-error.log
+
+### Application Configuration (dati sensibili - non committare) ###
+**/src/main/resources/application.properties
+
