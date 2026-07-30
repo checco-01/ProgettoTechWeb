@@ -1,4 +1,4 @@
-﻿package techWeb.roadToUninaBackend.repository;
+package techWeb.roadToUninaBackend.repository;
 
 import techWeb.roadToUninaBackend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

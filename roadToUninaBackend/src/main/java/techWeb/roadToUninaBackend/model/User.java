@@ -1,4 +1,4 @@
-﻿package techWeb.roadToUninaBackend.model;
+package techWeb.roadToUninaBackend.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

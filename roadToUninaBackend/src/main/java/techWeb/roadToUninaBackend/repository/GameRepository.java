@@ -1,4 +1,4 @@
-﻿package techWeb.roadToUninaBackend.repository;
+package techWeb.roadToUninaBackend.repository;
 
 import techWeb.roadToUninaBackend.model.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
