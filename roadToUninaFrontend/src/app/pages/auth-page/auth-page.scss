@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1B415D 0%, #2a5f82 100%);
   padding: 1rem;
 }
 
@@ -50,7 +50,7 @@
 
       &:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #1B415D;
       }
 
       &.ng-invalid.ng-touched {
@@ -91,12 +91,12 @@
     margin-top: 0.5rem;
 
     &.btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1B415D 0%, #2a5f82 100%);
       color: white;
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 25px rgba(27, 65, 93, 0.4);
       }
 
       &:disabled {
@@ -113,7 +113,7 @@
     font-size: 0.9rem;
 
     a {
-      color: #667eea;
+      color: #1B415D;
       text-decoration: none;
       font-weight: 600;
 

@@ -1,0 +1,78 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>{{ isLogin ? 'Bentornato' : 'Crea un Account' }}</h1>
+    <p class="subtitle">
+      {{ isLogin ? 'Accedi per continuare il tuo viaggio' : 'Registrati per iniziare a giocare' }}
+    </p>
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          [placeholder]="isLogin ? 'Inserisci il tuo username' : 'Scegli uno username'"
+          class="form-control"
+        />
+        @if (authForm.get('username')?.invalid && authForm.get('username')?.touched) {
+          <small class="error-text">L'username deve essere di almeno 3 caratteri</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          [placeholder]="isLogin ? 'Inserisci la tua password' : 'Scegli una password'"
+          class="form-control"
+        />
+        @if (authForm.get('password')?.invalid && authForm.get('password')?.touched) {
+          <small class="error-text">
+            {{ isLogin ? 'La password deve essere di almeno 6 caratteri' : 'La password deve essere tra 6 e 100 caratteri' }}
+          </small>
+        }
+      </div>
+
+      @if (!isLogin) {
+        <div class="form-group">
+          <label for="confirmPassword">Conferma Password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Conferma la tua password"
+            class="form-control"
+          />
+          @if (authForm.hasError('mismatch') && authForm.get('confirmPassword')?.touched) {
+            <small class="error-text">Le password non corrispondono</small>
+          }
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" class="btn btn-primary" [disabled]="authForm.invalid || isLoading">
+        @if (isLoading) {
+          <span>{{ isLogin ? 'Accesso in corso...' : 'Creazione account...' }}</span>
+        } @else {
+          <span>{{ isLogin ? 'Accedi' : 'Registrati' }}</span>
+        }
+      </button>
+    </form>
+
+    <p class="auth-link">
+      @if (isLogin) {
+        Non hai un account? <a routerLink="/register">Registrati</a>
+      } @else {
+        Hai già un account? <a routerLink="/login">Accedi</a>
+      }
+    </p>
+  </div>
+</div>

@@ -5,12 +5,12 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login/login').then((m) => m.LoginComponent),
+      import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
   },
   {
     path: 'register',
     loadComponent: () =>
-      import('./pages/register/register').then((m) => m.RegisterComponent),
+      import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
   },
   {
     path: 'game',
@@ -18,7 +18,7 @@ export const routes: Routes = [
     // Quando creerai GameComponent, sostituisci con:
     // loadComponent: () => import('./pages/game/game').then(m => m.GameComponent),
     loadComponent: () =>
-      import('./pages/login/login').then((m) => m.LoginComponent),
+      import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' },
