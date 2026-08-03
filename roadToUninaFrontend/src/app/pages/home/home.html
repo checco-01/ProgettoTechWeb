@@ -1,0 +1,47 @@
+<!-- ========== TOPBAR ========== -->
+<header class="topbar">
+  <a routerLink="/" class="topbar-brand">Road to Unina</a>
+
+  <nav class="topbar-nav">
+    <button class="topbar-link" (click)="openSearchModal()">Classifica</button>
+
+    @if (isLoggedIn) {
+      <span class="topbar-user">Ciao, {{ username }}</span>
+      <button class="topbar-link topbar-link--logout" (click)="logout()">Esci</button>
+    } @else {
+      <button class="topbar-link" (click)="openAuthModal('login')">Accedi</button>
+    }
+  </nav>
+</header>
+
+<!-- ========== CONTENUTO CENTRALE ========== -->
+<main class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">Road to Unina</h1>
+    <p class="hero-subtitle">Metti alla prova le tue conoscenze e scala la classifica</p>
+
+    @if (isLoggedIn) {
+      <button class="hero-btn" routerLink="/game">Inizia Partita</button>
+    } @else {
+      <a (click)="openAuthModal('login'); $event.preventDefault()" href="#">Accedi</a> o
+      <a (click)="openAuthModal('register'); $event.preventDefault()" href="#">Registrati</a> per
+      iniziare a giocare
+    }
+  </div>
+</main>
+
+<!-- ========== MODAL: Classifica ========== -->
+@if (showSearchModal) {
+  <div class="modal-overlay" (click)="closeModals()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModals()">&times;</button>
+      <h2>Classifica</h2>
+      <p>Top 50 navigatori di wikipedia</p>
+    </div>
+  </div>
+}
+
+<!-- ========== MODAL: Auth (Login / Registrazione) ========== -->
+@if (showAuthModal) {
+  <app-auth-modal [mode]="authMode" (close)="closeModals()" (authenticated)="onAuthenticated()" />
+}

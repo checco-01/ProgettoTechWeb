@@ -1,46 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-auth-page',
+  selector: 'app-auth-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './auth-page.html',
-  styleUrl: './auth-page.scss'
+  imports: [ReactiveFormsModule],
+  templateUrl: './auth-modal.component.html',
+  styleUrl: './auth-modal.component.scss',
 })
-export class AuthPageComponent implements OnInit {
+export class AuthModalComponent implements OnChanges {
+  @Input() mode: 'login' | 'register' = 'login';
+  @Output() close = new EventEmitter<void>();
+  @Output() authenticated = new EventEmitter<void>();
+
   authForm!: FormGroup;
   errorMessage: string = '';
   isLoading: boolean = false;
-  isLogin: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
-
-  ngOnInit(): void {
-    const path = this.route.snapshot.routeConfig?.path;
-    this.isLogin = path === 'login';
+  ) {
     this.buildForm();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['mode']) {
+      this.buildForm();
+      this.errorMessage = '';
+    }
+  }
+
+  switchMode(newMode: 'login' | 'register'): void {
+    this.mode = newMode;
+  }
+
+  get isLogin(): boolean {
+    return this.mode === 'login';
+  }
+
   private buildForm(): void {
-    if (this.isLogin) {
+    if (this.mode === 'login') {
       this.authForm = this.fb.group({
         username: ['', [Validators.required, Validators.minLength(3)]],
-        password: ['', [Validators.required, Validators.minLength(6)]]
+        password: ['', [Validators.required, Validators.minLength(6)]],
       });
     } else {
-      this.authForm = this.fb.group({
-        username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-        password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(100)]],
-        confirmPassword: ['', [Validators.required]]
-      }, { validators: this.passwordMatchValidator });
+      this.authForm = this.fb.group(
+        {
+          username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+          password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(100)]],
+          confirmPassword: ['', [Validators.required]],
+        },
+        { validators: this.passwordMatchValidator },
+      );
     }
   }
 
@@ -56,22 +70,22 @@ export class AuthPageComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    if (this.isLogin) {
+    if (this.mode === 'login') {
       this.authService.login(this.authForm.value).subscribe({
-        next: () => this.router.navigate(['/game']),
+        next: () => this.authenticated.emit(),
         error: (err) => {
           this.errorMessage = err.error?.error || 'Login fallito. Riprova.';
           this.isLoading = false;
-        }
+        },
       });
     } else {
       const { confirmPassword, ...authData } = this.authForm.value;
       this.authService.register(authData).subscribe({
-        next: () => this.router.navigate(['/game']),
+        next: () => this.authenticated.emit(),
         error: (err) => {
           this.errorMessage = err.error?.error || 'Registrazione fallita. Riprova.';
           this.isLoading = false;
-        }
+        },
       });
     }
   }

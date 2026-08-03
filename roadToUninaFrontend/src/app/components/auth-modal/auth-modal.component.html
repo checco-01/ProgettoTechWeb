@@ -1,8 +1,20 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h1>{{ isLogin ? 'Bentornato' : 'Crea un Account' }}</h1>
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="close.emit()">&times;</button>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab" [class.auth-tab--active]="isLogin" (click)="switchMode('login')">
+        Accedi
+      </button>
+      <button class="auth-tab" [class.auth-tab--active]="!isLogin" (click)="switchMode('register')">
+        Registrati
+      </button>
+    </div>
+
+    <h2>{{ isLogin ? 'Bentornato' : 'Crea un Account' }}</h2>
     <p class="subtitle">
-      {{ isLogin ? 'Accedi per continuare il tuo viaggio' : 'Registrati per iniziare a giocare' }}
+      {{ isLogin ? 'Accedi per continuare a giocare' : 'Registrati per iniziare a giocare' }}
     </p>
 
     <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
@@ -31,7 +43,11 @@
         />
         @if (authForm.get('password')?.invalid && authForm.get('password')?.touched) {
           <small class="error-text">
-            {{ isLogin ? 'La password deve essere di almeno 6 caratteri' : 'La password deve essere tra 6 e 100 caratteri' }}
+            {{
+              isLogin
+                ? 'La password deve essere di almeno 6 caratteri'
+                : 'La password deve essere tra 6 e 100 caratteri'
+            }}
           </small>
         }
       </div>
@@ -66,13 +82,5 @@
         }
       </button>
     </form>
-
-    <p class="auth-link">
-      @if (isLogin) {
-        Non hai un account? <a routerLink="/register">Registrati</a>
-      } @else {
-        Hai già un account? <a routerLink="/login">Accedi</a>
-      }
-    </p>
   </div>
 </div>
