@@ -1,4 +1,4 @@
-package techWeb.roadToUninaBackend.auth;
+package roadToUnina.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

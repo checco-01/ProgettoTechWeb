@@ -1,12 +1,12 @@
-package techWeb.roadToUninaBackend.service;
+package roadToUnina.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import techWeb.roadToUninaBackend.auth.AuthRequest;
-import techWeb.roadToUninaBackend.auth.AuthResponse;
-import techWeb.roadToUninaBackend.auth.JwtUtil;
-import techWeb.roadToUninaBackend.model.User;
-import techWeb.roadToUninaBackend.repository.UserRepository;
+import roadToUnina.auth.AuthRequest;
+import roadToUnina.auth.AuthResponse;
+import roadToUnina.auth.JwtUtil;
+import roadToUnina.model.User;
+import roadToUnina.repository.UserRepository;
 
 @Service
 public class AuthService {

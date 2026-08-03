@@ -1,12 +1,12 @@
-package techWeb.roadToUninaBackend.controller;
+package roadToUnina.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import techWeb.roadToUninaBackend.auth.AuthRequest;
-import techWeb.roadToUninaBackend.auth.AuthResponse;
-import techWeb.roadToUninaBackend.service.AuthService;
+import roadToUnina.auth.AuthRequest;
+import roadToUnina.auth.AuthResponse;
+import roadToUnina.service.AuthService;
 
 import java.util.Map;
 

@@ -1,7 +1,9 @@
-package techWeb.roadToUninaBackend.model;
+package roadToUnina.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import roadToUnina.model.types.GameStatus;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,9 +25,6 @@ public class Game {
     @Column(name = "start_url", nullable = false, length = 500)
     private String startUrl;
 
-    @Column(name = "end_url", nullable = false, length = 500)
-    private String endUrl;
-
     @Column(name = "number_of_steps")
     private Integer numberOfSteps = 0;
 
@@ -33,7 +32,7 @@ public class Game {
     private Integer timeElapsedSeconds = 0;
 
     @Column(nullable = false)
-    private Boolean completed = false;
+    private GameStatus gameStatus = GameStatus.InProgrss;
 
     @Column(nullable = false)
     private Boolean active = true;

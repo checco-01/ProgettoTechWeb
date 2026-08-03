@@ -1,4 +1,4 @@
-package techWeb.roadToUninaBackend.model;
+package roadToUnina.model;
 
 import jakarta.persistence.*;
 import lombok.*;

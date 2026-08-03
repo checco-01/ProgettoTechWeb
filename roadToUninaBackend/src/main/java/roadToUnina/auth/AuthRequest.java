@@ -1,4 +1,4 @@
-package techWeb.roadToUninaBackend.auth;
+package roadToUnina.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

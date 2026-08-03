@@ -1,6 +1,6 @@
-package techWeb.roadToUninaBackend.repository;
+package roadToUnina.repository;
 
-import techWeb.roadToUninaBackend.model.GameStep;
+import roadToUnina.model.GameStep;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

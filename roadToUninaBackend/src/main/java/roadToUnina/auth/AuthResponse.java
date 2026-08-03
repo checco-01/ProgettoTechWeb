@@ -1,4 +1,4 @@
-package techWeb.roadToUninaBackend.auth;
+package roadToUnina.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
