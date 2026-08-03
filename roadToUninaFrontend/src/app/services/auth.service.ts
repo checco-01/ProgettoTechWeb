@@ -15,7 +15,7 @@ export interface AuthResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
@@ -24,17 +24,19 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   register(data: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
-      .pipe(tap(response => this.storeAuthData(response)));
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/register`, data)
+      .pipe(tap((response) => this.storeAuthData(response)));
   }
 
   login(data: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data)
-      .pipe(tap(response => this.storeAuthData(response)));
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/login`, data)
+      .pipe(tap((response) => this.storeAuthData(response)));
   }
 
   logout(): void {

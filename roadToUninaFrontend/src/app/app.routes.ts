@@ -3,23 +3,23 @@ import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () => import('./pages/home/home').then((m) => m.HomeComponent),
+  },
+  {
     path: 'login',
-    loadComponent: () =>
-      import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
+    redirectTo: '/?auth=login',
+    pathMatch: 'full',
   },
   {
     path: 'register',
-    loadComponent: () =>
-      import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
+    redirectTo: '/?auth=register',
+    pathMatch: 'full',
   },
   {
     path: 'game',
     canActivate: [authGuard],
-    // Quando creerai GameComponent, sostituisci con:
-    // loadComponent: () => import('./pages/game/game').then(m => m.GameComponent),
-    loadComponent: () =>
-      import('./pages/auth-page/auth-page').then((m) => m.AuthPageComponent),
+    loadComponent: () => import('./pages/game/game').then((m) => m.GameComponent),
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' },
+  { path: '**', redirectTo: '/' },
 ];
