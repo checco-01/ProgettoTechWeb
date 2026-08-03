@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   showSearchModal = false;
+  showLeaderboardModal = false;
   showAuthModal = false;
   authMode: 'login' | 'register' = 'login';
 
@@ -39,6 +40,10 @@ export class HomeComponent implements OnInit {
 
   openSearchModal(): void {
     this.showSearchModal = true;
+  }
+
+  openLeaderboardModal(): void {
+    this.showLeaderboardModal = true;
   }
 
   openAuthModal(mode: 'login' | 'register' = 'login'): void {

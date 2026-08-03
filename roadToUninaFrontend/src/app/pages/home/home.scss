@@ -170,6 +170,22 @@
     margin: 0 0 1.5rem;
     font-size: 0.95rem;
   }
+
+  .search-bar {
+    display: flex;
+    gap: 0.5rem;
+
+    .form-control {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .btn {
+      width: auto;
+      flex-shrink: 0;
+      padding: 0.75rem 1.25rem;
+    }
+  }
 }
 
 @keyframes modalIn {

@@ -3,7 +3,9 @@
   <a routerLink="/" class="topbar-brand">Road to Unina</a>
 
   <nav class="topbar-nav">
-    <button class="topbar-link" (click)="openSearchModal()">Classifica</button>
+    <button class="topbar-link" (click)="openLeaderboardModal()">Classifica</button>
+
+    <button class="topbar-link" (click)="openSearchModal()">Cerca Partite</button>
 
     @if (isLoggedIn) {
       <span class="topbar-user">Ciao, {{ username }}</span>
@@ -40,6 +42,25 @@
     </div>
   </div>
 }
+
+<!-- ========== MODAL: Cerca partita ========== -->
+@if (showSearchModal) {
+  <div class="modal-overlay" (click)="closeModals()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModals()">&times;</button>
+      <h2>Lista partite</h2>
+      <div class="search-bar">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Cerca per codice partita o username..."
+        />
+        <button class="btn btn-primary">Cerca</button>
+      </div>
+    </div>
+  </div>
+}
+
 
 <!-- ========== MODAL: Auth (Login / Registrazione) ========== -->
 @if (showAuthModal) {
