@@ -1,0 +1,345 @@
+/* ========== TOPBAR ========== */
+.game-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1b415d;
+  padding: 0 1.5rem;
+  height: 56px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+.game-topbar-brand {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.game-target {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.game-target-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+}
+
+.game-target-name {
+  font-weight: 600;
+  color: #ffd700;
+}
+
+.game-moves {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.25rem 0.7rem;
+}
+
+.game-moves-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.game-moves-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.game-links-count {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+}
+
+.game-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-timer-icon {
+  font-size: 0.85rem;
+}
+
+/* ========== LOADING ========== */
+.game-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+  gap: 1rem;
+  color: #5a6c7d;
+
+  p {
+    font-size: 1.1rem;
+  }
+}
+
+.game-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e1e5ee;
+  border-top-color: #1b415d;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== VITTORIA ========== */
+.game-win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.game-win-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+    color: #1b415d;
+  }
+
+  p {
+    color: #5a6c7d;
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+
+    strong {
+      color: #1b415d;
+    }
+
+    em {
+      color: #8899aa;
+    }
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.game-win-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+
+  .btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    text-decoration: none;
+    border: none;
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #1b415d 0%, #2a5f82 100%);
+      color: #fff;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(27, 65, 93, 0.35);
+      }
+    }
+
+    &.btn-secondary {
+      background: #e1e5ee;
+      color: #1b415d;
+
+      &:hover {
+        background: #d1d5e0;
+      }
+    }
+  }
+}
+
+/* ========== CONTENUTO WIKIPEDIA ========== */
+.game-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  line-height: 1.7;
+  color: #222;
+
+  /* Stile base per i link Wikipedia */
+  a[href^='./wiki/'] {
+    color: #0645ad;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: #0b0080;
+    }
+  }
+
+  /* Nuovi link (rossi = pagina non esistente) */
+  a.new {
+    color: #ba0000;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 1.2em;
+    margin-bottom: 0.4em;
+    border-bottom: 1px solid #eaecf0;
+    padding-bottom: 0.2em;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0.5em 0;
+  }
+
+  img {
+    display: none;
+  }
+
+  /* Infobox */
+  .infobox {
+    float: right;
+    margin: 0 0 1rem 1rem;
+    max-width: 300px;
+    background: #f8f9fa;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+  }
+
+  table {
+    max-width: 100%;
+  }
+
+  sup {
+    display: none;
+  }
+
+  /* Nascondi elementi non necessari */
+  .mw-editsection,
+  .noprint,
+  .metadata,
+  .navbox,
+  .sisterproject,
+  .mbox-small {
+    display: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    height: auto;
+    min-height: 56px;
+  }
+
+  .game-info {
+    gap: 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .game-target-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .game-content {
+    padding: 1rem;
+
+    h1 {
+      font-size: 1.4rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+    }
+  }
+}

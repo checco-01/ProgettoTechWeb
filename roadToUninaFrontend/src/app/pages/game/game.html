@@ -1,0 +1,54 @@
+<!-- ========== TOPBAR DI GIOCO ========== -->
+<header class="game-topbar">
+  <a routerLink="/" class="game-topbar-brand">Road to Unina</a>
+
+  <div class="game-info">
+    <div class="game-target">
+      <span class="game-target-label">Obiettivo:</span>
+      <span class="game-target-name">{{ targetPage() }}</span>
+    </div>
+    <div class="game-moves">
+      <span class="game-moves-count">{{ moveCount() }}</span>
+      <span class="game-moves-label">mosse</span>
+    </div>
+    <div class="game-timer">
+      <span class="game-timer-icon">⏱</span>
+      <span>{{ formattedTime }}</span>
+    </div>
+    <div class="game-links-count">{{ links().length }} link</div>
+  </div>
+</header>
+
+<!-- ========== LOADING ========== -->
+@if (loading()) {
+  <div class="game-loading">
+    <div class="game-spinner"></div>
+    <p>Caricamento pagina...</p>
+  </div>
+}
+
+<!-- ========== VITTORIA ========== -->
+@if (hasWon()) {
+  <div class="game-win-overlay">
+    <div class="game-win-card">
+      <h1>🎉 Hai vinto!</h1>
+      <p>
+        Hai raggiunto <strong>{{ targetPage() }}</strong>
+      </p>
+      <p>
+        Partendo da <em>{{ startTitle() }}</em> in
+        <strong>{{ moveCount() }} mosse</strong>
+        — <strong>{{ formattedTime }}</strong>
+      </p>
+      <div class="game-win-actions">
+        <button class="btn btn-primary" (click)="restart()">Nuova Partita</button>
+        <a routerLink="/" class="btn btn-secondary">Home</a>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========== CONTENUTO WIKIPEDIA ========== -->
+@if (!loading()) {
+  <div class="game-content" [innerHTML]="currentHtml()" (click)="onContentClick($event)"></div>
+}

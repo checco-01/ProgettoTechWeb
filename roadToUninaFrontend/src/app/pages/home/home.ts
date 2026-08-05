@@ -33,7 +33,6 @@ export class HomeComponent implements OnInit {
     if (mode === 'login' || mode === 'register') {
       this.authMode = mode;
       this.showAuthModal = true;
-      // Pulisci il query param senza ricaricare
       this.router.navigate([], { queryParams: {}, replaceUrl: true });
     }
   }

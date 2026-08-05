@@ -10,7 +10,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     token = localStorage.getItem('auth_token');
   }
 
-  if (token) {
+  if (token && req.url.startsWith('http://localhost:8080')) {
     const cloned = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
