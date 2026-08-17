@@ -61,7 +61,19 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    if (!isPlatformBrowser(this.platformId)) return false;
+    const token = localStorage.getItem(this.tokenKey);
+    if (!token) return false;
+    return !this.isTokenExpired(token);
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return typeof payload.exp === 'number' && payload.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
   }
 
   private storeAuthData(response: AuthResponse): void {

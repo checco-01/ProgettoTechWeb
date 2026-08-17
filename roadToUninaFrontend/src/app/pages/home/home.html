@@ -23,17 +23,18 @@
     <p class="hero-subtitle">Metti alla prova le tue conoscenze e scala la classifica</p>
 
     @if (isLoggedIn) {
-      <button class="hero-btn" routerLink="/game">Inizia Partita</button>
+      <button class="hero-btn" (click)="startOrResumeGame()">Inizia Partita</button>
     } @else {
-      <a (click)="openAuthModal('login'); $event.preventDefault()" href="#">Accedi</a> o
-      <a (click)="openAuthModal('register'); $event.preventDefault()" href="#">Registrati</a> per
-      iniziare a giocare
+      <button class="hero-btn hero-btn--disabled" disabled>
+        <a (click)="openAuthModal('login'); $event.preventDefault()" href="#">Accedi</a> o
+        <a (click)="openAuthModal('register'); $event.preventDefault()" href="#">Registrati</a> per iniziare a giocare
+      </button>
     }
   </div>
 </main>
 
 <!-- ========== MODAL: Classifica ========== -->
-@if (showSearchModal) {
+@if (showLeaderboardModal) {
   <div class="modal-overlay" (click)="closeModals()">
     <div class="modal" (click)="$event.stopPropagation()">
       <button class="modal-close" (click)="closeModals()">&times;</button>
@@ -56,6 +57,39 @@
           placeholder="Cerca per codice partita o username..."
         />
         <button class="btn btn-primary">Cerca</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========== MODAL: Ripresa Partita ========== -->
+@if (showResumeModal) {
+  <div class="modal-overlay" (click)="closeModals()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModals()">&times;</button>
+      <h2>Hai una partita in corso!</h2>
+      <p>Vuoi riprenderla o iniziarne una nuova?</p>
+      @for (game of inProgressGames; track $index) {
+        <div class="resume-game-info">
+          <span class="resume-game-label">Partenza:</span>
+          <span class="resume-game-value">{{ game.startUrl }}</span>
+
+          <span class="resume-game-label">Mosse:</span>
+          <span class="resume-game-value">{{ game.numberOfSteps }}</span>
+
+          <span class="resume-game-label">Tempo:</span>
+          <span class="resume-game-value">{{ getElapsedTime(game.createdAt) }}</span>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" (click)="resumeGame(inProgressGames[0].id)">
+            Riprendi Partita
+          </button>
+        </div>>
+      }
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="startNewGame()">
+          Nuova Partita
+        </button>
       </div>
     </div>
   </div>

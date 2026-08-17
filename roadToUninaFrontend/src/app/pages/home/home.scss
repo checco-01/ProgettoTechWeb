@@ -254,10 +254,38 @@
       box-shadow: 0 6px 20px rgba(27, 65, 93, 0.35);
     }
   }
+
+  &.btn-secondary {
+    background: #e1e5ee;
+    color: #1b415d;
+
+    &:hover {
+      background: #d1d5e0;
+    }
+  }
 }
 
 .modal-actions {
-  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.resume-game-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  background: #f0f4f8;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+
+  .resume-game-label {
+    color: #5a6c7d;
+    font-weight: 600;
+  }
 }
 
 .modal-link {

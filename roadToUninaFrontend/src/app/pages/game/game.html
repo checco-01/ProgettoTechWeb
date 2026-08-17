@@ -13,13 +13,28 @@
     </div>
     <div class="game-timer">
       <span class="game-timer-icon">⏱</span>
-      <span>{{ formattedTime }}</span>
+      <span>{{ elapsedTime() }}</span>
     </div>
     <div class="game-links-count">{{ links().length }} link</div>
+    <button class="game-abandon-btn" (click)="abandon()">Arrenditi</button>
   </div>
 </header>
 
-<!-- ========== LOADING ========== -->
+<!-- ========== ERRORE ========== -->
+@if (errorMessage()) {
+  <div class="game-error-overlay">
+    <div class="game-error-card">
+      <h2>Errore</h2>
+      <p>{{ errorMessage() }}</p>
+      <p class="game-error-hint">Torna alla home e riprova.</p>
+      <div class="game-error-actions">
+        <a routerLink="/" class="btn btn-secondary">Torna alla home</a>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========== CARICAMENTO ========== -->
 @if (loading()) {
   <div class="game-loading">
     <div class="game-spinner"></div>
@@ -38,7 +53,7 @@
       <p>
         Partendo da <em>{{ startTitle() }}</em> in
         <strong>{{ moveCount() }} mosse</strong>
-        — <strong>{{ formattedTime }}</strong>
+        — <strong>{{ elapsedTime() }}</strong>
       </p>
       <div class="game-win-actions">
         <button class="btn btn-primary" (click)="restart()">Nuova Partita</button>

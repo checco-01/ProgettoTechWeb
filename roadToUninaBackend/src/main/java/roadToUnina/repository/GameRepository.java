@@ -11,7 +11,8 @@ import java.util.Optional;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByUserIdOrderByCreatedAtDesc(Long userId);
-    Optional<Game> findByUserIdAndActiveTrue(Long userId);
+    Optional<Game> findByUserIdAndGameStatus(Long userId, GameStatus gameStatus);
+    List<Game> findByGameStatusAndUserId(GameStatus gameStatus, Long userId);
     List<Game> findByGameStatusOrderByTimeElapsedSecondsAsc(GameStatus status);
     List<Game> findByGameStatusOrderByNumberOfStepsAsc(GameStatus status);
     List<Game> findByGameStatusAndUserIdOrderByCreatedAtDesc(GameStatus status, Long userId);

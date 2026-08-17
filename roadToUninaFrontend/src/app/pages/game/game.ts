@@ -1,10 +1,15 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { WikipediaService } from '../../services/wikipedia.service';
 import {
-  GameService,
-  StepRequest,
-} from '../../services/game.service';
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+} from '@angular/core';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { WikipediaService } from '../../services/wikipedia.service';
+import { GameService, StepRequest } from '../../services/game.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-game',
@@ -15,7 +20,9 @@ import {
 })
 export class GameComponent implements OnInit, OnDestroy {
   private wikiService = inject(WikipediaService);
-  private gameApi = inject(GameService);
+  private gameService = inject(GameService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   readonly targetPage = signal(this.wikiService.getTargetPage());
   readonly currentTitle = signal<string>('');
@@ -25,41 +32,82 @@ export class GameComponent implements OnInit, OnDestroy {
   readonly loading = signal(true);
   readonly startTitle = signal<string>('');
   readonly links = signal<string[]>([]);
-  readonly elapsedSeconds = signal(0);
+  readonly elapsedTime = signal('0:00');
+  readonly errorMessage = signal<string>('');
 
   private gameId: number | null = null;
   private timerInterval: ReturnType<typeof setInterval> | null = null;
-  private previousTitle: string = '';
+  private gameCreatedAt: Date | null = null;
 
   ngOnInit(): void {
-    this.wikiService.getRandomStart().subscribe((startTitle) => {
-      this.startTitle.set(startTitle);
-      this.startGameAndLoad(startTitle);
-    });
+    const gameIdParam = this.route.snapshot.queryParamMap.get('gameId');
+    if (gameIdParam) {
+      this.resumeGame(Number(gameIdParam));
+    } else {
+      this.wikiService.getRandomStart().subscribe((startTitle) => {
+        this.startTitle.set(startTitle);
+        this.startGameAndLoad(startTitle);
+      });
+    }
   }
 
   ngOnDestroy(): void {
-    this.stopTimer();
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  private resumeGame(gameId: number): void {
+    forkJoin({
+      step: this.gameService.getLastGameStep(gameId),
+      game: this.gameService.getGame(gameId),
+    }).subscribe({
+      next: ({ step, game }) => {
+        this.gameId = gameId;
+        this.startTitle.set(step.url);
+        this.moveCount.set(step.stepNumber);
+        this.gameCreatedAt = new Date(game.createdAt);
+        this.startTimer();
+        this.loadPage(step.url);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.errorMessage.set(
+          'Impossibile riprendere la partita: non esiste o non appartiene al tuo account.',
+        );
+      },
+    });
   }
 
   private startGameAndLoad(title: string): void {
-    this.gameApi.startGame(title).subscribe({
+    this.gameService.startGame(title).subscribe({
       next: (res) => {
         this.gameId = res.gameId;
+        this.gameCreatedAt = new Date();
         this.startTimer();
         this.loadPage(title);
       },
-      error: () => {
-        this.loadPage(title);
-      },
+      error: (err) =>
+        this.handleApiError(err, 'Impossibile creare la partita sul server'),
     });
+  }
+  private handleApiError(err: any, fallbackMessage: string): void {
+    if (err.status === 401 || err.status === 403) {
+      this.authService.logout();
+      window.location.href = '/?auth=login';
+      return;
+    }
+    this.errorMessage.set(
+      fallbackMessage + (err.status ? ` (HTTP ${err.status})` : ''),
+    );
+    this.loading.set(false);
   }
 
   loadPage(title: string): void {
     this.loading.set(true);
     this.wikiService.getPage(title).subscribe({
       next: (page) => {
-        this.previousTitle = this.currentTitle();
         this.currentTitle.set(page.title);
         this.currentHtml.set(page.html);
         this.links.set(page.links);
@@ -102,52 +150,77 @@ export class GameComponent implements OnInit, OnDestroy {
     if (!this.gameId) return;
 
     const stepReq: StepRequest = {
-      urlFrom: this.previousTitle || this.currentTitle(),
+      urlFrom: this.currentTitle(),
       urlTo: toTitle,
     };
 
-    this.gameApi.recordStep(this.gameId, stepReq).subscribe({
-      error: () => {
-        /* backend non essenziale, ignora errori */
+    this.gameService.recordStep(this.gameId, stepReq).subscribe({
+      error: (err) => {
+        if (err.status === 401 || err.status === 403) {
+          this.authService.logout();
+          window.location.href = '/?auth=login';
+        }
       },
     });
   }
 
   private onWin(): void {
     this.hasWon.set(true);
-    this.stopTimer();
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
 
     if (this.gameId) {
-      this.gameApi
+      this.gameService
         .completeGame(this.gameId, {
           totalSteps: this.moveCount(),
-          timeElapsedSeconds: this.elapsedSeconds(),
+          totalTime: this.getElapsedSeconds(),
         })
         .subscribe({
-          error: () => {
-            /* backend non essenziale */
+          error: (err) => {
+            if (err.status === 401 || err.status === 403) {
+              this.authService.logout();
+              window.location.href = '/?auth=login';
+            }
           },
         });
     }
   }
 
+  abandon(): void {
+    if (this.gameId) {
+      this.gameService.abandonGame(this.gameId).subscribe({
+        error: (err) => {
+          if (err.status === 401 || err.status === 403) {
+            this.authService.logout();
+          }
+        },
+      });
+    }
+    window.location.href = '/';
+  }
+
   private startTimer(): void {
+    if (this.timerInterval) return;
+    this.updateElapsedTime();
     this.timerInterval = setInterval(() => {
-      this.elapsedSeconds.update((s) => s + 1);
+      this.updateElapsedTime();
     }, 1000);
   }
 
-  private stopTimer(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
-    }
+  private updateElapsedTime(): void {
+    this.elapsedTime.set(this.formatSeconds(this.getElapsedSeconds()));
   }
 
-  get formattedTime(): string {
-    const secs = this.elapsedSeconds();
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
+  private getElapsedSeconds(): number {
+    if (!this.gameCreatedAt) return 0;
+    return Math.floor((Date.now() - this.gameCreatedAt.getTime()) / 1000);
+  }
+
+  private formatSeconds(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
@@ -155,9 +228,10 @@ export class GameComponent implements OnInit, OnDestroy {
     this.moveCount.set(0);
     this.hasWon.set(false);
     this.loading.set(true);
-    this.elapsedSeconds.set(0);
+    this.errorMessage.set('');
+    this.elapsedTime.set('0:00');
     this.gameId = null;
-    this.previousTitle = '';
+    this.gameCreatedAt = null;
 
     this.wikiService.getRandomStart().subscribe((title) => {
       this.startTitle.set(title);

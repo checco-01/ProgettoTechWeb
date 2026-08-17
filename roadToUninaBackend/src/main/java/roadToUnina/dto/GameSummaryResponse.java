@@ -14,7 +14,6 @@ public class GameSummaryResponse {
     private Long id;
     private String startUrl;
     private int numberOfSteps;
-    private int timeElapsedSeconds;
     private GameStatus gameStatus;
     private LocalDateTime createdAt;
 }

@@ -32,10 +32,8 @@ public class Game {
     private Integer timeElapsedSeconds = 0;
 
     @Column(nullable = false)
-    private GameStatus gameStatus = GameStatus.InProgrss;
-
-    @Column(nullable = false)
-    private Boolean active = true;
+    @Enumerated(EnumType.STRING)
+    private GameStatus gameStatus = GameStatus.InProgress;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

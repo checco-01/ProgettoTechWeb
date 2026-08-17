@@ -2,6 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
+import {
+  GameService,
+  GameSummaryResponse,
+} from '../../services/game.service';
 
 @Component({
   selector: 'app-home',
@@ -14,11 +18,14 @@ export class HomeComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private gameService = inject(GameService);
 
   showSearchModal = false;
   showLeaderboardModal = false;
   showAuthModal = false;
+  showResumeModal = false;
   authMode: 'login' | 'register' = 'login';
+  inProgressGames: GameSummaryResponse[] = [];
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -52,11 +59,58 @@ export class HomeComponent implements OnInit {
 
   closeModals(): void {
     this.showSearchModal = false;
+    this.showLeaderboardModal = false;
     this.showAuthModal = false;
+    this.showResumeModal = false;
   }
 
   onAuthenticated(): void {
     this.showAuthModal = false;
+  }
+
+  startOrResumeGame(): void {
+    this.gameService.getInProgressGames().subscribe({
+      next: (games) => {
+        this.inProgressGames = games;
+        if (games.length > 0) {
+          this.showResumeModal = true;
+        } else {
+          this.router.navigate(['/game']);
+        }
+      },
+      error: (err) => {
+        // Sessione scaduta o non valida: torna al login
+        if (err.status === 401 || err.status === 403) {
+          this.authService.logout();
+          this.router.navigate(['/'], { queryParams: { auth: 'login' } });
+          return;
+        }
+        this.router.navigate(['/game']);
+      },
+    });
+  }
+
+  resumeGame(gameId: number): void {
+    this.router.navigate(['/game'], { queryParams: { gameId } });
+  }
+
+  startNewGame(): void {
+    // Abbandona la partita in corso prima di iniziarne una nuova
+    if (this.inProgressGames.length > 0) {
+      this.gameService
+        .abandonGame(this.inProgressGames[0].id)
+        .subscribe();
+    }
+    this.router.navigate(['/game']);
+  }
+
+  getElapsedTime(createdAt: string): string {
+    if (!createdAt) return '0s';
+    const created = new Date(createdAt);
+    const elapsed = Math.floor((Date.now() - created.getTime()) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
   logout(): void {

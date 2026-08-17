@@ -11,6 +11,8 @@ import roadToUnina.repository.GameRepository;
 import roadToUnina.repository.GameStepRepository;
 import roadToUnina.repository.UserRepository;
 
+import java.util.List;
+
 @Service
 public class GameService {
 
@@ -34,9 +36,9 @@ public class GameService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Disattiva eventuali partite attive precedenti
-        gameRepository.findByUserIdAndActiveTrue(user.getId())
+        gameRepository.findByUserIdAndGameStatus(user.getId(), GameStatus.InProgress)
                 .ifPresent(game -> {
-                    game.setActive(false);
+                    game.setGameStatus(GameStatus.Failed);
                     gameRepository.save(game);
                 });
 
@@ -47,28 +49,23 @@ public class GameService {
     }
 
     @Transactional
-    public StepResponse recordStep(Long gameId, String username, StepRequest request) {
+    public void recordStep(Long gameId, String username, StepRequest request) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new IllegalArgumentException("Game not found"));
 
         validateGameOwnership(game, username);
 
-        if (!game.getActive()) {
+        if (game.getGameStatus() != GameStatus.InProgress) {
             throw new IllegalStateException("Game is not active");
         }
 
         int stepNumber = game.getNumberOfSteps() + 1;
+        game.setNumberOfSteps(stepNumber);
 
         GameStep step = new GameStep(game, stepNumber, request.getUrlFrom(), request.getUrlTo());
         gameStepRepository.save(step);
 
-        game.setNumberOfSteps(stepNumber);
         gameRepository.save(game);
-
-        boolean isTarget = request.getUrlTo().replace(' ', '_')
-                .equalsIgnoreCase(TARGET_URL);
-
-        return new StepResponse(stepNumber, isTarget);
     }
 
     @Transactional
@@ -79,21 +76,58 @@ public class GameService {
         validateGameOwnership(game, username);
 
         game.setNumberOfSteps(request.getTotalSteps());
-        game.setTimeElapsedSeconds(request.getTimeElapsedSeconds());
         game.setGameStatus(GameStatus.Completed);
-        game.setActive(false);
+        game.setTimeElapsedSeconds(request.getTotalTime());
         gameRepository.save(game);
 
         return toSummary(game);
+    }
+
+    @Transactional
+    public GameSummaryResponse abandonGame(Long gameId, String username) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new IllegalArgumentException("Game not found"));
+
+        validateGameOwnership(game, username);
+
+        game.setGameStatus(GameStatus.Failed);
+        gameRepository.save(game);
+
+        return toSummary(game);
+    }
+
+    public StepResponse getLastGameStep(Long gameId, String username) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new IllegalArgumentException("Game not found"));
+
+        validateGameOwnership(game, username);
+
+        GameStep lastStep = gameStepRepository.findTopByGameIdOrderByStepNumberDesc(gameId)
+                .orElseThrow(() -> new IllegalArgumentException("No steps found for this game"));
+
+        return StepResponse.builder()
+                .stepNumber(lastStep.getStepNumber())
+                .url(lastStep.getUrlTo())
+                .build();
     }
 
     public GameSummaryResponse getActiveGame(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return gameRepository.findByUserIdAndActiveTrue(user.getId())
+        return gameRepository.findByUserIdAndGameStatus(user.getId(), GameStatus.InProgress)
                 .map(this::toSummary)
                 .orElse(null);
+    }
+
+    public List<GameSummaryResponse> getInProgressGames(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return gameRepository.findByGameStatusAndUserId(GameStatus.InProgress, user.getId())
+                .stream()
+                .map(this::toSummary)
+                .toList();
     }
 
     public GameSummaryResponse getGame(Long gameId, String username) {
@@ -112,11 +146,10 @@ public class GameService {
     private GameSummaryResponse toSummary(Game game) {
         return GameSummaryResponse.builder()
                 .id(game.getId())
-                .startUrl(game.getStartUrl())
                 .numberOfSteps(game.getNumberOfSteps())
-                .timeElapsedSeconds(game.getTimeElapsedSeconds())
                 .gameStatus(game.getGameStatus())
                 .createdAt(game.getCreatedAt())
+                .startUrl(game.getStartUrl())
                 .build();
     }
 }

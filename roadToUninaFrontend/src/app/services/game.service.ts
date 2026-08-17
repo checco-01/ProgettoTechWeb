@@ -13,20 +13,19 @@ export interface StepRequest {
 }
 
 export interface StepResponse {
+  url: string;
   stepNumber: number;
-  target: boolean;
 }
 
 export interface CompleteGameRequest {
   totalSteps: number;
-  timeElapsedSeconds: number;
+  totalTime: number;
 }
 
 export interface GameSummaryResponse {
   id: number;
   startUrl: string;
   numberOfSteps: number;
-  timeElapsedSeconds: number;
   gameStatus: string;
   createdAt: string;
 }
@@ -43,27 +42,27 @@ export class GameService {
     });
   }
 
-  recordStep(
-    gameId: number,
-    request: StepRequest
-  ): Observable<StepResponse> {
-    return this.http.post<StepResponse>(
-      `${this.apiUrl}/${gameId}/step`,
-      request
-    );
+  recordStep(gameId: number, request: StepRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${gameId}/step`, request);
   }
 
-  completeGame(
-    gameId: number,
-    request: CompleteGameRequest
-  ): Observable<GameSummaryResponse> {
-    return this.http.post<GameSummaryResponse>(
-      `${this.apiUrl}/${gameId}/complete`,
-      request
-    );
+  completeGame(gameId: number, request: CompleteGameRequest): Observable<GameSummaryResponse> {
+    return this.http.post<GameSummaryResponse>(`${this.apiUrl}/${gameId}/complete`, request);
   }
 
-  getActiveGame(): Observable<GameSummaryResponse | null> {
-    return this.http.get<GameSummaryResponse>(`${this.apiUrl}/active`);
+  abandonGame(gameId: number): Observable<GameSummaryResponse> {
+    return this.http.post<GameSummaryResponse>(`${this.apiUrl}/${gameId}/abandon`, {});
+  }
+
+  getInProgressGames(): Observable<GameSummaryResponse[]> {
+    return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/in-progress`);
+  }
+
+  getLastGameStep(gameId: number): Observable<StepResponse> {
+    return this.http.get<StepResponse>(`${this.apiUrl}/${gameId}/last-step`);
+  }
+
+  getGame(gameId: number): Observable<GameSummaryResponse> {
+    return this.http.get<GameSummaryResponse>(`${this.apiUrl}/${gameId}`);
   }
 }

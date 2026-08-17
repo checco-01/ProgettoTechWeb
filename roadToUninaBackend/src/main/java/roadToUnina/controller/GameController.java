@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import roadToUnina.dto.*;
 import roadToUnina.service.GameService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,8 +38,8 @@ public class GameController {
                                         @Valid @RequestBody StepRequest request,
                                         Authentication auth) {
         try {
-            StepResponse response = gameService.recordStep(gameId, auth.getName(), request);
-            return ResponseEntity.ok(response);
+            gameService.recordStep(gameId, auth.getName(), request);
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", e.getMessage()));
@@ -61,6 +62,27 @@ public class GameController {
         }
     }
 
+    @PostMapping("/{gameId}/abandon")
+    public ResponseEntity<?> abandonGame(@PathVariable Long gameId, Authentication auth) {
+        try {
+            GameSummaryResponse response = gameService.abandonGame(gameId, auth.getName());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{gameId}/last-step")
+    public ResponseEntity<?> getLastStep(@PathVariable Long gameId, Authentication auth) {
+        try {
+            StepResponse response = gameService.getLastGameStep(gameId, auth.getName());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/active")
     public ResponseEntity<?> getActiveGame(Authentication auth) {
         GameSummaryResponse game = gameService.getActiveGame(auth.getName());
@@ -68,6 +90,11 @@ public class GameController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(game);
+    }
+
+    @GetMapping("/in-progress")
+    public ResponseEntity<List<GameSummaryResponse>> getInProgressGames(Authentication auth) {
+        return ResponseEntity.ok(gameService.getInProgressGames(auth.getName()));
     }
 
     @GetMapping("/{gameId}")
