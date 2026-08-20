@@ -35,15 +35,11 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Disattiva eventuali partite attive precedenti
-        gameRepository.findByUserIdAndGameStatus(user.getId(), GameStatus.InProgress)
-                .ifPresent(game -> {
-                    game.setGameStatus(GameStatus.Failed);
-                    gameRepository.save(game);
-                });
-
         Game game = new Game(user, request.getStartUrl());
         game = gameRepository.save(game);
+
+        GameStep step = new GameStep(game, 0, "", request.getStartUrl());
+        gameStepRepository.save(step);
 
         return new StartGameResponse(game.getId(), game.getStartUrl());
     }
@@ -124,7 +120,7 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return gameRepository.findByGameStatusAndUserId(GameStatus.InProgress, user.getId())
+        return gameRepository.findByGameStatusAndUserIdOrderByCreatedAtDesc(GameStatus.InProgress, user.getId())
                 .stream()
                 .map(this::toSummary)
                 .toList();
