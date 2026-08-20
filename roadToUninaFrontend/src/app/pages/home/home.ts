@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
@@ -20,12 +20,12 @@ export class HomeComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private gameService = inject(GameService);
 
-  showSearchModal = false;
-  showLeaderboardModal = false;
-  showAuthModal = false;
-  showResumeModal = false;
-  authMode: 'login' | 'register' = 'login';
-  inProgressGames: GameSummaryResponse[] = [];
+  showSearchModal = signal(false);
+  showLeaderboardModal = signal(false);
+  showAuthModal = signal(false);
+  showResumeModal = signal(false);
+  authMode = signal<'login' | 'register'>('login');
+  inProgressGames = signal<GameSummaryResponse[]>([]);
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -38,42 +38,42 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     const mode = this.route.snapshot.queryParamMap.get('auth');
     if (mode === 'login' || mode === 'register') {
-      this.authMode = mode;
-      this.showAuthModal = true;
+      this.authMode.set(mode);
+      this.showAuthModal.set(true);
       this.router.navigate([], { queryParams: {}, replaceUrl: true });
     }
   }
 
   openSearchModal(): void {
-    this.showSearchModal = true;
+    this.showSearchModal.set(true);
   }
 
   openLeaderboardModal(): void {
-    this.showLeaderboardModal = true;
+    this.showLeaderboardModal.set(true);
   }
 
   openAuthModal(mode: 'login' | 'register' = 'login'): void {
-    this.authMode = mode;
-    this.showAuthModal = true;
+    this.authMode.set(mode);
+    this.showAuthModal.set(true);
   }
 
   closeModals(): void {
-    this.showSearchModal = false;
-    this.showLeaderboardModal = false;
-    this.showAuthModal = false;
-    this.showResumeModal = false;
+    this.showSearchModal.set(false);
+    this.showLeaderboardModal.set(false);
+    this.showAuthModal.set(false);
+    this.showResumeModal.set(false);
   }
 
   onAuthenticated(): void {
-    this.showAuthModal = false;
+    this.showAuthModal.set(false);
   }
 
   startOrResumeGame(): void {
     this.gameService.getInProgressGames().subscribe({
       next: (games) => {
-        this.inProgressGames = games;
+        this.inProgressGames.set(games);
         if (games.length > 0) {
-          this.showResumeModal = true;
+          this.showResumeModal.set(true);
         } else {
           this.router.navigate(['/game']);
         }
@@ -102,9 +102,11 @@ export class HomeComponent implements OnInit {
   abandonGame(game: GameSummaryResponse): void {
     this.gameService.abandonGame(game.id).subscribe({
       next: () => {
-        this.inProgressGames = this.inProgressGames.filter((g) => g.id !== game.id);
-        if (this.inProgressGames.length === 0) {
-          this.showResumeModal = false;
+        this.inProgressGames.set(
+          this.inProgressGames().filter((g) => g.id !== game.id),
+        );
+        if (this.inProgressGames().length === 0) {
+          this.showResumeModal.set(false);
         }
       },
       error: (err) => {

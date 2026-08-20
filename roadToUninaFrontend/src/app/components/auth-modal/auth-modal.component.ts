@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
@@ -15,8 +15,8 @@ export class AuthModalComponent implements OnChanges {
   @Output() authenticated = new EventEmitter<void>();
 
   authForm!: FormGroup;
-  errorMessage: string = '';
-  isLoading: boolean = false;
+  errorMessage = signal('');
+  isLoading = signal(false);
 
   constructor(
     private fb: FormBuilder,
@@ -28,7 +28,7 @@ export class AuthModalComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['mode']) {
       this.buildForm();
-      this.errorMessage = '';
+      this.errorMessage.set('');
     }
   }
 
@@ -67,15 +67,15 @@ export class AuthModalComponent implements OnChanges {
   onSubmit(): void {
     if (this.authForm.invalid) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
 
     if (this.mode === 'login') {
       this.authService.login(this.authForm.value).subscribe({
         next: () => this.authenticated.emit(),
         error: (err) => {
-          this.errorMessage = err.error?.error || 'Login fallito. Riprova.';
-          this.isLoading = false;
+          this.errorMessage.set(err.error?.error || 'Login fallito. Riprova.');
+          this.isLoading.set(false);
         },
       });
     } else {
@@ -83,8 +83,8 @@ export class AuthModalComponent implements OnChanges {
       this.authService.register(authData).subscribe({
         next: () => this.authenticated.emit(),
         error: (err) => {
-          this.errorMessage = err.error?.error || 'Registrazione fallita. Riprova.';
-          this.isLoading = false;
+          this.errorMessage.set(err.error?.error || 'Registrazione fallita. Riprova.');
+          this.isLoading.set(false);
         },
       });
     }

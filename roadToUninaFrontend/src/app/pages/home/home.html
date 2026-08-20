@@ -34,7 +34,7 @@
 </main>
 
 <!-- ========== MODAL: Classifica ========== -->
-@if (showLeaderboardModal) {
+@if (showLeaderboardModal()) {
   <div class="modal-overlay" (click)="closeModals()">
     <div class="modal" (click)="$event.stopPropagation()">
       <button class="modal-close" (click)="closeModals()">&times;</button>
@@ -45,7 +45,7 @@
 }
 
 <!-- ========== MODAL: Cerca partita ========== -->
-@if (showSearchModal) {
+@if (showSearchModal()) {
   <div class="modal-overlay" (click)="closeModals()">
     <div class="modal" (click)="$event.stopPropagation()">
       <button class="modal-close" (click)="closeModals()">&times;</button>
@@ -63,13 +63,13 @@
 }
 
 <!-- ========== MODAL: Ripresa Partita ========== -->
-@if (showResumeModal) {
+@if (showResumeModal()) {
   <div class="modal-overlay" (click)="closeModals()">
     <div class="modal" (click)="$event.stopPropagation()">
       <button class="modal-close" (click)="closeModals()">&times;</button>
-      <h2>Hai {{ inProgressGames.length === 1 ? 'una partita' : inProgressGames.length + ' partite' }} in corso!</h2>
+      <h2>Hai {{ inProgressGames().length === 1 ? 'una partita' : inProgressGames().length + ' partite' }} in corso!</h2>
       <p>Riprendi una partita, abbandonala o iniziane una nuova.</p>
-      @for (game of inProgressGames; track game.id) {
+      @for (game of inProgressGames(); track game.id) {
         <div class="resume-game-info">
           <span class="resume-game-label">Partenza:</span>
           <span class="resume-game-value">{{ game.startUrl }}</span>
@@ -99,6 +99,6 @@
 }
 
 <!-- ========== MODAL: Auth (Login / Registrazione) ========== -->
-@if (showAuthModal) {
-  <app-auth-modal [mode]="authMode" (close)="closeModals()" (authenticated)="onAuthenticated()" />
+@if (showAuthModal()) {
+  <app-auth-modal [mode]="authMode()" (close)="closeModals()" (authenticated)="onAuthenticated()" />
 }

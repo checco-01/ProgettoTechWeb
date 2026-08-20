@@ -68,14 +68,14 @@
         </div>
       }
 
-      @if (errorMessage) {
+      @if (errorMessage()) {
         <div class="alert alert-error">
-          {{ errorMessage }}
+          {{ errorMessage() }}
         </div>
       }
 
-      <button type="submit" class="btn btn-primary" [disabled]="authForm.invalid || isLoading">
-        @if (isLoading) {
+      <button type="submit" class="btn btn-primary" [disabled]="authForm.invalid || isLoading()">
+        @if (isLoading()) {
           <span>{{ isLogin ? 'Accesso in corso...' : 'Creazione account...' }}</span>
         } @else {
           <span>{{ isLogin ? 'Accedi' : 'Registrati' }}</span>
