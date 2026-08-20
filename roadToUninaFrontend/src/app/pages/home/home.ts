@@ -2,6 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
+import { LeaderboardModalComponent } from '../../components/leaderboard-modal/leaderboard-modal.component';
+import { SearchGameModalComponent } from '../../components/search-game-modal/search-game-modal.component';
+import { ResumeGameModalComponent } from '../../components/resume-game-modal/resume-game-modal.component';
 import {
   GameService,
   GameSummaryResponse,
@@ -10,7 +13,13 @@ import {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, AuthModalComponent],
+  imports: [
+    RouterLink,
+    AuthModalComponent,
+    LeaderboardModalComponent,
+    SearchGameModalComponent,
+    ResumeGameModalComponent,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -117,15 +126,6 @@ export class HomeComponent implements OnInit {
         }
       },
     });
-  }
-
-  getElapsedTime(createdAt: string): string {
-    if (!createdAt) return '0s';
-    const created = new Date(createdAt);
-    const elapsed = Math.floor((Date.now() - created.getTime()) / 1000);
-    const m = Math.floor(elapsed / 60);
-    const s = elapsed % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
   logout(): void {

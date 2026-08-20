@@ -1,0 +1,7 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="close.emit()">&times;</button>
+    <h2>Classifica</h2>
+    <p>Top 50 navigatori di wikipedia</p>
+  </div>
+</div>

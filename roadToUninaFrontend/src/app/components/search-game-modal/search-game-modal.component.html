@@ -1,0 +1,18 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="close.emit()">&times;</button>
+    <h2>Lista partite</h2>
+    <p>Cerca una partita per codice o username</p>
+    <div class="search-bar">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Cerca per codice partita o username..."
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+        (keydown.enter)="onSearch()"
+      />
+      <button class="btn btn-primary" (click)="onSearch()">Cerca</button>
+    </div>
+  </div>
+</div>

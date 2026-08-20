@@ -35,67 +35,23 @@
 
 <!-- ========== MODAL: Classifica ========== -->
 @if (showLeaderboardModal()) {
-  <div class="modal-overlay" (click)="closeModals()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <button class="modal-close" (click)="closeModals()">&times;</button>
-      <h2>Classifica</h2>
-      <p>Top 50 navigatori di wikipedia</p>
-    </div>
-  </div>
+  <app-leaderboard-modal (close)="closeModals()" />
 }
 
 <!-- ========== MODAL: Cerca partita ========== -->
 @if (showSearchModal()) {
-  <div class="modal-overlay" (click)="closeModals()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <button class="modal-close" (click)="closeModals()">&times;</button>
-      <h2>Lista partite</h2>
-      <div class="search-bar">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Cerca per codice partita o username..."
-        />
-        <button class="btn btn-primary">Cerca</button>
-      </div>
-    </div>
-  </div>
+  <app-search-game-modal (close)="closeModals()" />
 }
 
 <!-- ========== MODAL: Ripresa Partita ========== -->
 @if (showResumeModal()) {
-  <div class="modal-overlay" (click)="closeModals()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <button class="modal-close" (click)="closeModals()">&times;</button>
-      <h2>Hai {{ inProgressGames().length === 1 ? 'una partita' : inProgressGames().length + ' partite' }} in corso!</h2>
-      <p>Riprendi una partita, abbandonala o iniziane una nuova.</p>
-      @for (game of inProgressGames(); track game.id) {
-        <div class="resume-game-info">
-          <span class="resume-game-label">Partenza:</span>
-          <span class="resume-game-value">{{ game.startUrl }}</span>
-
-          <span class="resume-game-label">Mosse:</span>
-          <span class="resume-game-value">{{ game.numberOfSteps }}</span>
-
-          <span class="resume-game-label">Tempo:</span>
-          <span class="resume-game-value">{{ getElapsedTime(game.createdAt) }}</span>
-        </div>
-        <div class="resume-game-actions">
-          <button class="btn btn-primary" (click)="resumeGame(game.id)">
-            Riprendi
-          </button>
-          <button class="btn btn-danger" (click)="abandonGame(game)">
-            Abbandona
-          </button>
-        </div>
-      }
-      <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="startNewGame()">
-          Nuova Partita
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-resume-game-modal
+    [games]="inProgressGames()"
+    (close)="closeModals()"
+    (resume)="resumeGame($event)"
+    (abandon)="abandonGame($event)"
+    (newGame)="startNewGame()"
+  />
 }
 
 <!-- ========== MODAL: Auth (Login / Registrazione) ========== -->
