@@ -16,8 +16,6 @@ import java.util.List;
 @Service
 public class GameService {
 
-    private static final String TARGET_URL = "Università_degli_Studi_di_Napoli_Federico_II";
-
     private final GameRepository gameRepository;
     private final GameStepRepository gameStepRepository;
     private final UserRepository userRepository;
@@ -133,6 +131,34 @@ public class GameService {
         return toSummary(game);
     }
 
+    public List<GameSummaryResponse> searchCompletedGames(String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+        return gameRepository.searchCompletedGames(GameStatus.Completed, query.trim())
+                .stream()
+                .map(this::toSummary)
+                .toList();
+    }
+
+    public List<StepResponse> getGameSteps(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new IllegalArgumentException("Game not found"));
+
+        // Il percorso è visibile solo per le partite completate
+        if (game.getGameStatus() != GameStatus.Completed) {
+            throw new IllegalStateException("Only completed games expose their path");
+        }
+
+        return gameStepRepository.findByGameIdOrderByStepNumberAsc(gameId)
+                .stream()
+                .map(step -> StepResponse.builder()
+                        .stepNumber(step.getStepNumber())
+                        .url(step.getUrlTo())
+                        .build())
+                .toList();
+    }
+
     private void validateGameOwnership(Game game, String username) {
         if (!game.getUser().getUsername().equals(username)) {
             throw new IllegalArgumentException("Game does not belong to user");
@@ -142,8 +168,10 @@ public class GameService {
     private GameSummaryResponse toSummary(Game game) {
         return GameSummaryResponse.builder()
                 .id(game.getId())
+                .username(game.getUser().getUsername())
                 .numberOfSteps(game.getNumberOfSteps())
                 .gameStatus(game.getGameStatus())
+                .timeElapsedSeconds(game.getTimeElapsedSeconds())
                 .createdAt(game.getCreatedAt())
                 .startUrl(game.getStartUrl())
                 .build();

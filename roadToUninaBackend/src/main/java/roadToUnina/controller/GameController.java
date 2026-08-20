@@ -97,6 +97,24 @@ public class GameController {
         return ResponseEntity.ok(gameService.getInProgressGames(auth.getName()));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<GameSummaryResponse>> searchCompletedGames(@RequestParam String query) {
+        return ResponseEntity.ok(gameService.searchCompletedGames(query));
+    }
+
+    @GetMapping("/{gameId}/steps")
+    public ResponseEntity<?> getGameSteps(@PathVariable Long gameId) {
+        try {
+            List<StepResponse> steps = gameService.getGameSteps(gameId);
+            return ResponseEntity.ok(steps);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/{gameId}")
     public ResponseEntity<?> getGame(@PathVariable Long gameId, Authentication auth) {
         try {

@@ -12,8 +12,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GameSummaryResponse {
     private Long id;
+    private String username;
     private String startUrl;
     private int numberOfSteps;
+    private Integer timeElapsedSeconds;
     private GameStatus gameStatus;
     private LocalDateTime createdAt;
 }

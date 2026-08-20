@@ -24,9 +24,11 @@ export interface CompleteGameRequest {
 
 export interface GameSummaryResponse {
   id: number;
+  username: string;
   startUrl: string;
   numberOfSteps: number;
   gameStatus: string;
+  timeElapsedSeconds: number;
   createdAt: string;
 }
 
@@ -56,6 +58,16 @@ export class GameService {
 
   getInProgressGames(): Observable<GameSummaryResponse[]> {
     return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/in-progress`);
+  }
+
+  searchGames(query: string): Observable<GameSummaryResponse[]> {
+    return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/search`, {
+      params: { query },
+    });
+  }
+
+  getGameSteps(gameId: number): Observable<StepResponse[]> {
+    return this.http.get<StepResponse[]>(`${this.apiUrl}/${gameId}/steps`);
   }
 
   getLastGameStep(gameId: number): Observable<StepResponse> {
