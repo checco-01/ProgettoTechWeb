@@ -5,10 +5,7 @@ import { AuthModalComponent } from '../../components/auth-modal/auth-modal.compo
 import { LeaderboardModalComponent } from '../../components/leaderboard-modal/leaderboard-modal.component';
 import { SearchGameModalComponent } from '../../components/search-game-modal/search-game-modal.component';
 import { ResumeGameModalComponent } from '../../components/resume-game-modal/resume-game-modal.component';
-import {
-  GameService,
-  GameSummaryResponse,
-} from '../../services/game.service';
+import { GameService, GameSummaryResponse } from '../../services/game.service';
 
 @Component({
   selector: 'app-home',
@@ -111,9 +108,7 @@ export class HomeComponent implements OnInit {
   abandonGame(game: GameSummaryResponse): void {
     this.gameService.abandonGame(game.id).subscribe({
       next: () => {
-        this.inProgressGames.set(
-          this.inProgressGames().filter((g) => g.id !== game.id),
-        );
+        this.inProgressGames.set(this.inProgressGames().filter((g) => g.id !== game.id));
         if (this.inProgressGames().length === 0) {
           this.showResumeModal.set(false);
         }

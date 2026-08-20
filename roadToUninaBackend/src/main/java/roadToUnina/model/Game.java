@@ -1,10 +1,9 @@
 package roadToUnina.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 import roadToUnina.model.types.GameStatus;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "games")

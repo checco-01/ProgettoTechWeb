@@ -15,18 +15,12 @@
         <span class="resume-game-value">{{ getElapsedTime(game.createdAt) }}</span>
       </div>
       <div class="resume-game-actions">
-        <button class="btn btn-primary" (click)="resume.emit(game.id)">
-          Riprendi
-        </button>
-        <button class="btn btn-danger" (click)="abandon.emit(game)">
-          Abbandona
-        </button>
+        <button class="btn btn-primary" (click)="resume.emit(game.id)">Riprendi</button>
+        <button class="btn btn-danger" (click)="abandon.emit(game)">Abbandona</button>
       </div>
     }
     <div class="modal-actions">
-      <button class="btn btn-secondary" (click)="newGame.emit()">
-        Nuova Partita
-      </button>
+      <button class="btn btn-secondary" (click)="newGame.emit()">Nuova Partita</button>
     </div>
   </div>
 </div>

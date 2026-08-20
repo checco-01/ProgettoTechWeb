@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StepRequest {
-    @NotBlank
-    private String urlFrom;
+    @NotBlank private String urlFrom;
 
-    @NotBlank
-    private String urlTo;
+    @NotBlank private String urlTo;
 }

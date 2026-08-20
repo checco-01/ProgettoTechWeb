@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CompleteGameRequest {
-    @Min(0)
-    private int totalSteps;
+    @Min(0) private int totalSteps;
+
     private int totalTime;
 }

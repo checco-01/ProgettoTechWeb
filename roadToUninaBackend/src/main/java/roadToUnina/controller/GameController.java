@@ -1,15 +1,14 @@
 package roadToUnina.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import roadToUnina.dto.*;
 import roadToUnina.service.GameService;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/game")
@@ -22,43 +21,36 @@ public class GameController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<?> startGame(@Valid @RequestBody StartGameRequest request,
-                                       Authentication auth) {
+    public ResponseEntity<?> startGame(@Valid @RequestBody StartGameRequest request, Authentication auth) {
         try {
             StartGameResponse response = gameService.startGame(auth.getName(), request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
     @PostMapping("/{gameId}/step")
-    public ResponseEntity<?> recordStep(@PathVariable Long gameId,
-                                        @Valid @RequestBody StepRequest request,
-                                        Authentication auth) {
+    public ResponseEntity<?> recordStep(
+            @PathVariable Long gameId, @Valid @RequestBody StepRequest request, Authentication auth) {
         try {
             gameService.recordStep(gameId, auth.getName(), request);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
         }
     }
 
     @PostMapping("/{gameId}/complete")
-    public ResponseEntity<?> completeGame(@PathVariable Long gameId,
-                                          @Valid @RequestBody CompleteGameRequest request,
-                                          Authentication auth) {
+    public ResponseEntity<?> completeGame(
+            @PathVariable Long gameId, @Valid @RequestBody CompleteGameRequest request, Authentication auth) {
         try {
             GameSummaryResponse response = gameService.completeGame(gameId, auth.getName(), request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -68,8 +60,7 @@ public class GameController {
             GameSummaryResponse response = gameService.abandonGame(gameId, auth.getName());
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -110,8 +101,7 @@ public class GameController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
         }
     }
 

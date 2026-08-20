@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartGameRequest {
-    @NotBlank
-    private String startUrl;
+    @NotBlank private String startUrl;
 }

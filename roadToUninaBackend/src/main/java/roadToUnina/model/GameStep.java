@@ -1,9 +1,8 @@
 package roadToUnina.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "game_steps")

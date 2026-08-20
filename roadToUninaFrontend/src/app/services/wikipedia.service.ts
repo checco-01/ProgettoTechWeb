@@ -21,17 +21,13 @@ export class WikipediaService {
 
   getRandomStart(): Observable<string> {
     const url = `${this.baseUrl}?action=query&list=random&rnnamespace=0&rnfilterredir=nonredirects&rnlimit=5&format=json&origin=*`;
-    return this.http
-      .get<{ query: { random: { id: number; title: string }[] } }>(url)
-      .pipe(
-        map((res) => {
-          const titles = res.query.random.map((r) => r.title);
-          const valid = titles.find(
-            (t) => t !== this.targetPage.replace(/_/g, ' '),
-          );
-          return valid ?? titles[0];
-        }),
-      );
+    return this.http.get<{ query: { random: { id: number; title: string }[] } }>(url).pipe(
+      map((res) => {
+        const titles = res.query.random.map((r) => r.title);
+        const valid = titles.find((t) => t !== this.targetPage.replace(/_/g, ' '));
+        return valid ?? titles[0];
+      }),
+    );
   }
 
   getPage(title: string): Observable<WikiPage> {
@@ -59,15 +55,13 @@ export class WikipediaService {
 
   private extractLinks(html: string): string[] {
     const linkSet = new Set<string>();
-    const regex =
-      /<a\s[^>]*href="\/wiki\/([^"#]+?)"[^>]*?(?:class="([^"]*)")?[^>]*>/gi;
+    const regex = /<a\s[^>]*href="\/wiki\/([^"#]+?)"[^>]*?(?:class="([^"]*)")?[^>]*>/gi;
     let match: RegExpExecArray | null;
     while ((match = regex.exec(html)) !== null) {
       const title = decodeURIComponent(match[1]);
       const cssClass = match[2] || '';
 
-      if (cssClass.includes('new') || cssClass.includes('mw-disambig'))
-        continue;
+      if (cssClass.includes('new') || cssClass.includes('mw-disambig')) continue;
 
       if (
         title.startsWith('Speciale:') ||
@@ -89,19 +83,13 @@ export class WikipediaService {
   private cleanHtml(html: string): string {
     let cleaned = html;
 
-    cleaned = cleaned.replace(
-      /<span class="mw-editsection">[\s\S]*?<\/span><\/span>/g,
-      '',
-    );
+    cleaned = cleaned.replace(/<span class="mw-editsection">[\s\S]*?<\/span><\/span>/g, '');
 
     cleaned = cleaned.replace(/\sclass="[^"]*"/gi, '');
     cleaned = cleaned.replace(/\sstyle="[^"]*"/gi, '');
     cleaned = cleaned.replace(/\sdata-[a-zA-Z-]+="[^"]*"/gi, '');
 
-    cleaned = cleaned.replace(
-      /\/\/upload\.wikimedia\.org/g,
-      'https://upload.wikimedia.org',
-    );
+    cleaned = cleaned.replace(/\/\/upload\.wikimedia\.org/g, 'https://upload.wikimedia.org');
 
     cleaned = cleaned.replace(/href="\/wiki\/([^"]+)"/g, 'href="./wiki/$1"');
 
@@ -110,10 +98,7 @@ export class WikipediaService {
       '<a>',
     );
 
-    cleaned = cleaned.replace(
-      /<a\s[^>]*href="(?!\.\/wiki\/)[^"]*"[^>]*>/gi,
-      '<a>',
-    );
+    cleaned = cleaned.replace(/<a\s[^>]*href="(?!\.\/wiki\/)[^"]*"[^>]*>/gi, '<a>');
 
     return cleaned;
   }

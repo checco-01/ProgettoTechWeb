@@ -1,7 +1,7 @@
 package roadToUnina.model.types;
 
 public enum GameStatus {
-  InProgress,
-  Completed,
-  Failed;
+    InProgress,
+    Completed,
+    Failed
 }

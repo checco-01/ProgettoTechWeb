@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { WikipediaService } from '../../services/wikipedia.service';
@@ -90,8 +84,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.startTimer();
         this.loadPage(title);
       },
-      error: (err) =>
-        this.handleApiError(err, 'Impossibile creare la partita sul server'),
+      error: (err) => this.handleApiError(err, 'Impossibile creare la partita sul server'),
     });
   }
   private handleApiError(err: any, fallbackMessage: string): void {
@@ -99,9 +92,7 @@ export class GameComponent implements OnInit, OnDestroy {
       this.handleAuthError();
       return;
     }
-    this.errorMessage.set(
-      fallbackMessage + (err.status ? ` (HTTP ${err.status})` : ''),
-    );
+    this.errorMessage.set(fallbackMessage + (err.status ? ` (HTTP ${err.status})` : ''));
     this.loading.set(false);
   }
 
@@ -130,9 +121,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.loadPageAttempts++;
         this.loading.set(false);
         if (this.loadPageAttempts >= 3) {
-          this.errorMessage.set(
-            `Impossibile caricare la pagina "${title}" da Wikipedia.`,
-          );
+          this.errorMessage.set(`Impossibile caricare la pagina "${title}" da Wikipedia.`);
           return;
         }
         this.loadPage(title);
