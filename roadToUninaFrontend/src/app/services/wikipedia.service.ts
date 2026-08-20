@@ -87,15 +87,32 @@ export class WikipediaService {
   }
 
   private cleanHtml(html: string): string {
-    let cleaned = html.replace(/\sclass="[^"]*"/gi, '');
+    let cleaned = html;
+
+    cleaned = cleaned.replace(
+      /<span class="mw-editsection">[\s\S]*?<\/span><\/span>/g,
+      '',
+    );
+
+    cleaned = cleaned.replace(/\sclass="[^"]*"/gi, '');
     cleaned = cleaned.replace(/\sstyle="[^"]*"/gi, '');
     cleaned = cleaned.replace(/\sdata-[a-zA-Z-]+="[^"]*"/gi, '');
+
+    cleaned = cleaned.replace(
+      /\/\/upload\.wikimedia\.org/g,
+      'https://upload.wikimedia.org',
+    );
 
     cleaned = cleaned.replace(/href="\/wiki\/([^"]+)"/g, 'href="./wiki/$1"');
 
     cleaned = cleaned.replace(
-      /<a\s[^>]*href="\.\/wiki\/(File:|Categoria:|Speciale:|Aiuto:|Wikipedia:|Template:|Portale:)[^"]*"[^>]*>.*?<\/a>/gi,
-      '',
+      /<a\s[^>]*href="\.\/wiki\/(File:|Categoria:|Speciale:|Aiuto:|Wikipedia:|Template:|Portale:)[^"]*"[^>]*>/gi,
+      '<a>',
+    );
+
+    cleaned = cleaned.replace(
+      /<a\s[^>]*href="(?!\.\/wiki\/)[^"]*"[^>]*>/gi,
+      '<a>',
     );
 
     return cleaned;
