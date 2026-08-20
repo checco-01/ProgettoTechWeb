@@ -5,7 +5,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { WikipediaService } from '../../services/wikipedia.service';
 import { GameService, StepRequest } from '../../services/game.service';
@@ -23,6 +23,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private gameService = inject(GameService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   readonly targetPage = signal(this.wikiService.getTargetPage());
   readonly currentTitle = signal<string>('');
@@ -38,6 +39,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private gameId: number | null = null;
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   private gameCreatedAt: Date | null = null;
+  private loadPageAttempts = 0;
 
   ngOnInit(): void {
     const gameIdParam = this.route.snapshot.queryParamMap.get('gameId');
@@ -94,8 +96,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
   private handleApiError(err: any, fallbackMessage: string): void {
     if (err.status === 401 || err.status === 403) {
-      this.authService.logout();
-      window.location.href = '/?auth=login';
+      this.handleAuthError();
       return;
     }
     this.errorMessage.set(
@@ -104,10 +105,16 @@ export class GameComponent implements OnInit, OnDestroy {
     this.loading.set(false);
   }
 
+  private handleAuthError(): void {
+    this.authService.logout();
+    this.router.navigate(['/'], { queryParams: { auth: 'login' } });
+  }
+
   loadPage(title: string): void {
     this.loading.set(true);
     this.wikiService.getPage(title).subscribe({
       next: (page) => {
+        this.loadPageAttempts = 0;
         this.currentTitle.set(page.title);
         this.currentHtml.set(page.html);
         this.links.set(page.links);
@@ -120,7 +127,14 @@ export class GameComponent implements OnInit, OnDestroy {
         }
       },
       error: () => {
+        this.loadPageAttempts++;
         this.loading.set(false);
+        if (this.loadPageAttempts >= 3) {
+          this.errorMessage.set(
+            `Impossibile caricare la pagina "${title}" da Wikipedia.`,
+          );
+          return;
+        }
         this.loadPage(title);
       },
     });
@@ -133,10 +147,12 @@ export class GameComponent implements OnInit, OnDestroy {
     const anchor = target.closest('a');
     if (!anchor) return;
 
+    // Blocca sempre la navigazione di default: nessun click su un link
+    // (anche esterno, es. fonti/bibliografia) deve aprire un'altra pagina
+    event.preventDefault();
+
     const href = anchor.getAttribute('href');
     if (!href || !href.startsWith('./wiki/')) return;
-
-    event.preventDefault();
 
     const title = decodeURIComponent(href.replace('./wiki/', ''));
     if (title && this.links().includes(title)) {
@@ -157,9 +173,12 @@ export class GameComponent implements OnInit, OnDestroy {
     this.gameService.recordStep(this.gameId, stepReq).subscribe({
       error: (err) => {
         if (err.status === 401 || err.status === 403) {
-          this.authService.logout();
-          window.location.href = '/?auth=login';
+          this.handleAuthError();
+          return;
         }
+        // Rollback: lo step non è stato salvato dal backend, il contatore
+        // frontend deve restare allineato a numberOfSteps.
+        this.moveCount.update((c) => Math.max(0, c - 1));
       },
     });
   }
@@ -180,8 +199,7 @@ export class GameComponent implements OnInit, OnDestroy {
         .subscribe({
           error: (err) => {
             if (err.status === 401 || err.status === 403) {
-              this.authService.logout();
-              window.location.href = '/?auth=login';
+              this.handleAuthError();
             }
           },
         });
@@ -193,12 +211,12 @@ export class GameComponent implements OnInit, OnDestroy {
       this.gameService.abandonGame(this.gameId).subscribe({
         error: (err) => {
           if (err.status === 401 || err.status === 403) {
-            this.authService.logout();
+            this.handleAuthError();
           }
         },
       });
     }
-    window.location.href = '/';
+    this.router.navigate(['/']);
   }
 
   private startTimer(): void {
@@ -232,6 +250,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.elapsedTime.set('0:00');
     this.gameId = null;
     this.gameCreatedAt = null;
+    this.loadPageAttempts = 0;
 
     this.wikiService.getRandomStart().subscribe((title) => {
       this.startTitle.set(title);
