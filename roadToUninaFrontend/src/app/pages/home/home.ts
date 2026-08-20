@@ -95,13 +95,26 @@ export class HomeComponent implements OnInit {
   }
 
   startNewGame(): void {
-    // Abbandona la partita in corso prima di iniziarne una nuova
-    if (this.inProgressGames.length > 0) {
-      this.gameService
-        .abandonGame(this.inProgressGames[0].id)
-        .subscribe();
-    }
+    // Non abbandona le partite in corso: restano disponibili per la ripresa
     this.router.navigate(['/game']);
+  }
+
+  abandonGame(game: GameSummaryResponse): void {
+    this.gameService.abandonGame(game.id).subscribe({
+      next: () => {
+        this.inProgressGames = this.inProgressGames.filter((g) => g.id !== game.id);
+        if (this.inProgressGames.length === 0) {
+          this.showResumeModal = false;
+        }
+      },
+      error: (err) => {
+        // Sessione scaduta o non valida: torna al login
+        if (err.status === 401 || err.status === 403) {
+          this.authService.logout();
+          this.router.navigate(['/'], { queryParams: { auth: 'login' } });
+        }
+      },
+    });
   }
 
   getElapsedTime(createdAt: string): string {

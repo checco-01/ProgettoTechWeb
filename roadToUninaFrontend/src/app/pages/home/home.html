@@ -67,9 +67,9 @@
   <div class="modal-overlay" (click)="closeModals()">
     <div class="modal" (click)="$event.stopPropagation()">
       <button class="modal-close" (click)="closeModals()">&times;</button>
-      <h2>Hai una partita in corso!</h2>
-      <p>Vuoi riprenderla o iniziarne una nuova?</p>
-      @for (game of inProgressGames; track $index) {
+      <h2>Hai {{ inProgressGames.length === 1 ? 'una partita' : inProgressGames.length + ' partite' }} in corso!</h2>
+      <p>Riprendi una partita, abbandonala o iniziane una nuova.</p>
+      @for (game of inProgressGames; track game.id) {
         <div class="resume-game-info">
           <span class="resume-game-label">Partenza:</span>
           <span class="resume-game-value">{{ game.startUrl }}</span>
@@ -80,11 +80,14 @@
           <span class="resume-game-label">Tempo:</span>
           <span class="resume-game-value">{{ getElapsedTime(game.createdAt) }}</span>
         </div>
-        <div class="modal-actions">
-          <button class="btn btn-primary" (click)="resumeGame(inProgressGames[0].id)">
-            Riprendi Partita
+        <div class="resume-game-actions">
+          <button class="btn btn-primary" (click)="resumeGame(game.id)">
+            Riprendi
           </button>
-        </div>>
+          <button class="btn btn-danger" (click)="abandonGame(game)">
+            Abbandona
+          </button>
+        </div>
       }
       <div class="modal-actions">
         <button class="btn btn-secondary" (click)="startNewGame()">

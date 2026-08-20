@@ -263,6 +263,26 @@
       background: #d1d5e0;
     }
   }
+
+  &.btn-danger {
+    background: #c0392b;
+    color: #fff;
+
+    &:hover {
+      background: #a93226;
+    }
+  }
+}
+
+.resume-game-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  .btn {
+    flex: 1;
+  }
 }
 
 .modal-actions {
