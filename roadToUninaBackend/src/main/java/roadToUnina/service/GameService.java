@@ -1,6 +1,7 @@
 package roadToUnina.service;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roadToUnina.dto.*;
@@ -136,6 +137,19 @@ public class GameService {
         }
         return gameRepository.searchCompletedGames(GameStatus.Completed, query.trim()).stream()
                 .map(this::toSummary)
+                .toList();
+    }
+
+    public List<LeaderboardEntryResponse> getLeaderboard() {
+        List<GameRepository.LeaderboardRow> rows = gameRepository.findLeaderboard(GameStatus.Completed);
+
+        return IntStream.range(0, Math.min(rows.size(), 10))
+                .mapToObj(i -> LeaderboardEntryResponse.builder()
+                        .position(i + 1)
+                        .username(rows.get(i).getUsername())
+                        .completedGames(rows.get(i).getCompletedGames())
+                        .averageSteps(rows.get(i).getAverageSteps())
+                        .build())
                 .toList();
     }
 

@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/game/search")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/game/leaderboard")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/game/*/steps")
                         .permitAll()
                         .anyRequest()

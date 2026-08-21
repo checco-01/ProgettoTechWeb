@@ -25,4 +25,23 @@ public interface GameRepository extends JpaRepository<Game, Long> {
         ORDER BY g.createdAt DESC
         """)
     List<Game> searchCompletedGames(@Param("status") GameStatus status, @Param("query") String query);
+
+    @Query("""
+        SELECT g.user.username AS username,
+               COUNT(g)          AS completedGames,
+               AVG(g.numberOfSteps) AS averageSteps
+        FROM Game g
+        WHERE g.gameStatus = :status
+        GROUP BY g.user.username
+        ORDER BY COUNT(g) DESC, AVG(g.numberOfSteps) ASC, g.user.username ASC
+        """)
+    List<LeaderboardRow> findLeaderboard(@Param("status") GameStatus status);
+
+    interface LeaderboardRow {
+        String getUsername();
+
+        Long getCompletedGames();
+
+        Double getAverageSteps();
+    }
 }

@@ -1,7 +1,42 @@
 <div class="modal-overlay" (click)="close.emit()">
-  <div class="modal" (click)="$event.stopPropagation()">
+  <div class="modal modal--wide" (click)="$event.stopPropagation()">
     <button class="modal-close" (click)="close.emit()">&times;</button>
     <h2>Classifica</h2>
-    <p>Top 50 navigatori di wikipedia</p>
+    <p>I 10 migliori navigatori di Wikipedia</p>
+
+    @if (isLoading()) {
+      <p class="leaderboard-message">Caricamento classifica...</p>
+    } @else if (error()) {
+      <p class="leaderboard-message leaderboard-message--error">{{ error() }}</p>
+    } @else if (entries().length === 0) {
+      <p class="leaderboard-message">
+        Nessuna sfida completata ancora. Sii il primo a comparire in classifica!
+      </p>
+    } @else {
+      <div class="leaderboard">
+        <div class="leaderboard-header">
+          <span class="leaderboard-col leaderboard-col--pos">#</span>
+          <span class="leaderboard-col leaderboard-col--user">Utente</span>
+          <span class="leaderboard-col leaderboard-col--games">Sfide</span>
+          <span class="leaderboard-col leaderboard-col--steps">Percorso medio</span>
+        </div>
+        @for (entry of entries(); track entry.username) {
+          <div class="leaderboard-row" [class.leaderboard-row--top3]="entry.position <= 3">
+            <span
+              class="leaderboard-col leaderboard-col--pos"
+              [class.leaderboard-medal]="entry.position <= 3"
+              [class]="medalClass(entry.position)"
+            >
+              {{ entry.position }}
+            </span>
+            <span class="leaderboard-col leaderboard-col--user">{{ entry.username }}</span>
+            <span class="leaderboard-col leaderboard-col--games">{{ entry.completedGames }}</span>
+            <span class="leaderboard-col leaderboard-col--steps">
+              {{ formatAverageSteps(entry.averageSteps) }} passi
+            </span>
+          </div>
+        }
+      </div>
+    }
   </div>
 </div>

@@ -32,6 +32,13 @@ export interface GameSummaryResponse {
   createdAt: string;
 }
 
+export interface LeaderboardEntryResponse {
+  position: number;
+  username: string;
+  completedGames: number;
+  averageSteps: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class GameService {
   private apiUrl = 'http://localhost:8080/api/game';
@@ -64,6 +71,10 @@ export class GameService {
     return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/search`, {
       params: { query },
     });
+  }
+
+  getLeaderboard(): Observable<LeaderboardEntryResponse[]> {
+    return this.http.get<LeaderboardEntryResponse[]>(`${this.apiUrl}/leaderboard`);
   }
 
   getGameSteps(gameId: number): Observable<StepResponse[]> {

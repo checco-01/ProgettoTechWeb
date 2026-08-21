@@ -93,6 +93,11 @@ public class GameController {
         return ResponseEntity.ok(gameService.searchCompletedGames(query));
     }
 
+    @GetMapping("/leaderboard")
+    public ResponseEntity<List<LeaderboardEntryResponse>> getLeaderboard() {
+        return ResponseEntity.ok(gameService.getLeaderboard());
+    }
+
     @GetMapping("/{gameId}/steps")
     public ResponseEntity<?> getGameSteps(@PathVariable Long gameId) {
         try {
