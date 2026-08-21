@@ -190,27 +190,16 @@
               font-weight: 700;
             }
 
-            .path-step-urls {
-              display: inline-flex;
-              align-items: center;
-              gap: 0.35rem;
-              min-width: 0;
+            .path-step-url {
+              color: #1b415d;
+              word-break: break-word;
+              line-height: 1.3;
+            }
 
-              .path-step-url {
-                color: #1b415d;
-                word-break: break-word;
-                line-height: 1.3;
-
-                &--current {
-                  font-weight: 600;
-                }
-              }
-
-              .path-step-arrow {
-                color: #9fb0c0;
-                font-size: 0.75rem;
-                line-height: 1;
-              }
+            .path-step-arrow {
+              color: #9fb0c0;
+              font-size: 0.75rem;
+              line-height: 1;
             }
           }
         }

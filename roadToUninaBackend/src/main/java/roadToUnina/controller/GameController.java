@@ -74,15 +74,6 @@ public class GameController {
         }
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<?> getActiveGame(Authentication auth) {
-        GameSummaryResponse game = gameService.getActiveGame(auth.getName());
-        if (game == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(game);
-    }
-
     @GetMapping("/in-progress")
     public ResponseEntity<List<GameSummaryResponse>> getInProgressGames(Authentication auth) {
         return ResponseEntity.ok(gameService.getInProgressGames(auth.getName()));

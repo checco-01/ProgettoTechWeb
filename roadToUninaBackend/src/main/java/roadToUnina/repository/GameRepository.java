@@ -1,7 +1,6 @@
 package roadToUnina.repository;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,8 +10,6 @@ import roadToUnina.model.types.GameStatus;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
-    Optional<Game> findByUserIdAndGameStatus(Long userId, GameStatus gameStatus);
-
     List<Game> findByGameStatusAndUserIdOrderByCreatedAtDesc(GameStatus status, Long userId);
 
     List<Game> findByUserIdOrderByCreatedAtDesc(Long userId);

@@ -102,17 +102,6 @@ public class GameService {
                 .build();
     }
 
-    public GameSummaryResponse getActiveGame(String username) {
-        User user = userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return gameRepository
-                .findByUserIdAndGameStatus(user.getId(), GameStatus.InProgress)
-                .map(this::toSummary)
-                .orElse(null);
-    }
-
     public List<GameSummaryResponse> getInProgressGames(String username) {
         User user = userRepository
                 .findByUsername(username)

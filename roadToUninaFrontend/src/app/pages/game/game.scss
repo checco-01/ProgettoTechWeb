@@ -327,15 +327,6 @@
     }
   }
 
-  /* Nuovi link (rossi = pagina non esistente) */
-  a.new {
-    color: #ba0000;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
   h1,
   h2,
   h3,
@@ -366,33 +357,11 @@
     display: none;
   }
 
-  /* Infobox */
-  .infobox {
-    float: right;
-    margin: 0 0 1rem 1rem;
-    max-width: 300px;
-    background: #f8f9fa;
-    border: 1px solid #ccc;
-    padding: 0.5rem;
-    font-size: 0.85rem;
-    border-radius: 4px;
-  }
-
   table {
     max-width: 100%;
   }
 
   sup {
-    display: none;
-  }
-
-  /* Nascondi elementi non necessari */
-  .mw-editsection,
-  .noprint,
-  .metadata,
-  .navbox,
-  .sisterproject,
-  .mbox-small {
     display: none;
   }
 }
