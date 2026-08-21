@@ -5,6 +5,7 @@ import { AuthModalComponent } from '../../components/auth-modal/auth-modal.compo
 import { LeaderboardModalComponent } from '../../components/leaderboard-modal/leaderboard-modal.component';
 import { SearchGameModalComponent } from '../../components/search-game-modal/search-game-modal.component';
 import { ResumeGameModalComponent } from '../../components/resume-game-modal/resume-game-modal.component';
+import { UserSummarySidebarComponent } from '../../components/user-summary-sidebar/user-summary-sidebar.component';
 import { GameService, GameSummaryResponse } from '../../services/game.service';
 
 @Component({
@@ -16,6 +17,7 @@ import { GameService, GameSummaryResponse } from '../../services/game.service';
     LeaderboardModalComponent,
     SearchGameModalComponent,
     ResumeGameModalComponent,
+    UserSummarySidebarComponent,
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
@@ -30,6 +32,7 @@ export class HomeComponent implements OnInit {
   showLeaderboardModal = signal(false);
   showAuthModal = signal(false);
   showResumeModal = signal(false);
+  showUserSidebar = signal(false);
   authMode = signal<'login' | 'register'>('login');
   inProgressGames = signal<GameSummaryResponse[]>([]);
 
@@ -52,6 +55,14 @@ export class HomeComponent implements OnInit {
 
   openSearchModal(): void {
     this.showSearchModal.set(true);
+  }
+
+  toggleUserSidebar(): void {
+    this.showUserSidebar.set(!this.showUserSidebar());
+  }
+
+  closeUserSidebar(): void {
+    this.showUserSidebar.set(false);
   }
 
   openLeaderboardModal(): void {

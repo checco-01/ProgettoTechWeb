@@ -125,6 +125,16 @@ public class GameService {
                 .toList();
     }
 
+    public List<GameSummaryResponse> getMyGames(String username) {
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return gameRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
+                .map(this::toSummary)
+                .toList();
+    }
+
     public GameSummaryResponse getGame(Long gameId, String username) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
         validateGameOwnership(game, username);
@@ -156,9 +166,9 @@ public class GameService {
     public List<StepResponse> getGameSteps(Long gameId) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
 
-        // Il percorso è visibile solo per le partite completate
-        if (game.getGameStatus() != GameStatus.Completed) {
-            throw new IllegalStateException("Only completed games expose their path");
+        // Il percorso è visibile solo per le partite concluse (completate o abbandonate)
+        if (game.getGameStatus() == GameStatus.InProgress) {
+            throw new IllegalStateException("Only finished games expose their path");
         }
 
         return gameStepRepository.findByGameIdOrderByStepNumberAsc(gameId).stream()

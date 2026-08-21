@@ -54,6 +54,16 @@
   font-size: 0.9rem;
 }
 
+.topbar-user-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  .topbar-user {
+    color: inherit;
+  }
+}
+
 /* ========== HERO ========== */
 .hero {
   display: flex;

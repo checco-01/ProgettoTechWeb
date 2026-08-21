@@ -1,0 +1,320 @@
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.sidebar {
+  width: 340px;
+  max-width: 90vw;
+  height: 100%;
+  background: #fff;
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  animation: sidebarIn 0.25s ease;
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #1b415d 0%, #2a5f82 100%);
+
+    .sidebar-header-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+
+      .sidebar-avatar {
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+      }
+
+      .sidebar-header-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        .sidebar-title {
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 0.78rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .sidebar-username {
+          color: #fff;
+          font-size: 1.05rem;
+          font-weight: 700;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .sidebar-close {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 0.25rem;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+
+  .sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.sidebar-message {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: #f0f4f8;
+  color: #5a6c7d;
+  text-align: center;
+  font-size: 0.9rem;
+
+  &--error {
+    background: #fdecea;
+    color: #b3402a;
+  }
+}
+
+/* ====== CARDS RIEPILOGO ====== */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.75rem 0.4rem;
+  border-radius: 12px;
+  border: 1px solid #e1e5ee;
+  background: #fafbfd;
+
+  .summary-card-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .summary-card-label {
+    font-size: 0.72rem;
+    color: #5a6c7d;
+    text-align: center;
+  }
+
+  &--won {
+    .summary-card-value {
+      color: #2f8f5b;
+    }
+  }
+
+  &--abandoned {
+    .summary-card-value {
+      color: #b3402a;
+    }
+  }
+
+  &--progress {
+    .summary-card-value {
+      color: #2a5f82;
+    }
+  }
+}
+
+/* ====== SEZIONI ====== */
+.sidebar-section {
+  margin-top: 1.25rem;
+
+  .sidebar-section-title {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #1b415d;
+  }
+
+  .game-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+}
+
+.game-card {
+  border: 1px solid #e1e5ee;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  background: #fafbfd;
+
+  .game-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.2rem 0;
+    font-size: 0.85rem;
+
+    .game-card-label {
+      color: #5a6c7d;
+      flex-shrink: 0;
+    }
+
+    .game-card-value {
+      color: #1b415d;
+      font-weight: 600;
+      text-align: right;
+      word-break: break-word;
+
+      &--code {
+        color: #2a5f82;
+        font-weight: 700;
+      }
+
+      &--url {
+        font-weight: 500;
+        font-size: 0.78rem;
+      }
+    }
+  }
+
+  .btn-path {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.65rem;
+    border: 1px solid #2a5f82;
+    border-radius: 999px;
+    background: transparent;
+    color: #2a5f82;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #2a5f82;
+      color: #fff;
+    }
+
+    .btn-path-arrow {
+      font-size: 0.62rem;
+    }
+  }
+
+  .game-card-path {
+    margin-top: 0.7rem;
+    border-top: 1px dashed #d4dbe6;
+    padding-top: 0.7rem;
+    animation: pathIn 0.2s ease;
+
+    .path-message {
+      margin: 0;
+      color: #5a6c7d;
+      font-size: 0.8rem;
+      text-align: center;
+
+      &--error {
+        color: #b3402a;
+      }
+    }
+
+    .path-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+
+      .path-step {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.78rem;
+
+        .path-step-arrow {
+          color: #9fb0c0;
+          font-size: 0.72rem;
+          flex-shrink: 0;
+        }
+
+        .path-step-number {
+          flex-shrink: 0;
+          min-width: 1.3rem;
+          height: 1.3rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: #1b415d;
+          color: #fff;
+          font-size: 0.65rem;
+          font-weight: 700;
+        }
+
+        .path-step-url {
+          color: #1b415d;
+          word-break: break-word;
+          line-height: 1.3;
+        }
+      }
+    }
+  }
+}
+
+@keyframes sidebarIn {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pathIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

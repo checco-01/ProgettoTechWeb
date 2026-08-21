@@ -88,6 +88,11 @@ public class GameController {
         return ResponseEntity.ok(gameService.getInProgressGames(auth.getName()));
     }
 
+    @GetMapping("/my-games")
+    public ResponseEntity<List<GameSummaryResponse>> getMyGames(Authentication auth) {
+        return ResponseEntity.ok(gameService.getMyGames(auth.getName()));
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<GameSummaryResponse>> searchCompletedGames(@RequestParam String query) {
         return ResponseEntity.ok(gameService.searchCompletedGames(query));

@@ -1,0 +1,195 @@
+<div class="sidebar-overlay" (click)="close.emit()">
+  <aside class="sidebar" (click)="$event.stopPropagation()">
+    <header class="sidebar-header">
+      <div class="sidebar-header-user">
+        <span class="sidebar-avatar">{{ username?.[0]?.toUpperCase() ?? '?' }}</span>
+        <div class="sidebar-header-info">
+          <span class="sidebar-title">Riepilogo partite</span>
+          <span class="sidebar-username">{{ username }}</span>
+        </div>
+      </div>
+      <button class="sidebar-close" (click)="close.emit()">&times;</button>
+    </header>
+
+    <div class="sidebar-body">
+      @if (isLoading()) {
+        <p class="sidebar-message">Caricamento riepilogo...</p>
+      } @else if (error()) {
+        <p class="sidebar-message sidebar-message--error">{{ error() }}</p>
+      } @else {
+        <!-- ====== RIEPILOGO ====== -->
+        <div class="summary-cards">
+          <div class="summary-card summary-card--won">
+            <span class="summary-card-value">{{ completedGames.length }}</span>
+            <span class="summary-card-label">Vinte</span>
+          </div>
+          <div class="summary-card summary-card--abandoned">
+            <span class="summary-card-value">{{ failedGames.length }}</span>
+            <span class="summary-card-label">Abbandonate</span>
+          </div>
+          <div class="summary-card summary-card--progress">
+            <span class="summary-card-value">{{ inProgressGames.length }}</span>
+            <span class="summary-card-label">In corso</span>
+          </div>
+        </div>
+
+        @if (games().length === 0) {
+          <p class="sidebar-message">Non hai ancora giocato nessuna partita.</p>
+        } @else {
+          <!-- ====== PARTITE VINTE ====== -->
+          @if (completedGames.length > 0) {
+            <section class="sidebar-section">
+              <h3 class="sidebar-section-title">Partite vinte</h3>
+              <div class="game-list">
+                @for (game of completedGames; track game.id) {
+                  <div class="game-card">
+                    <div class="game-card-row">
+                      <span class="game-card-label">Codice:</span>
+                      <span class="game-card-value game-card-value--code">#{{ game.id }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Partenza:</span>
+                      <span class="game-card-value game-card-value--url">{{ game.startUrl }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Mosse:</span>
+                      <span class="game-card-value">{{ game.numberOfSteps }}</span>
+                      <button
+                        class="btn-path"
+                        (click)="togglePath(game.id)"
+                        [attr.aria-expanded]="expandedGameId() === game.id"
+                      >
+                        {{ expandedGameId() === game.id ? 'Nascondi percorso' : 'Percorso' }}
+                        <span class="btn-path-arrow">{{
+                          expandedGameId() === game.id ? '▲' : '▼'
+                        }}</span>
+                      </button>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Tempo:</span>
+                      <span class="game-card-value">{{
+                        getFormattedTime(game.timeElapsedSeconds)
+                      }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Data:</span>
+                      <span class="game-card-value">{{ getFormattedDate(game.createdAt) }}</span>
+                    </div>
+
+                    @if (expandedGameId() === game.id) {
+                      <div class="game-card-path">
+                        @if (isLoadingSteps()) {
+                          <p class="path-message">Caricamento percorso...</p>
+                        } @else if (stepsError()) {
+                          <p class="path-message path-message--error">{{ stepsError() }}</p>
+                        } @else {
+                          <div class="path-list">
+                            @for (step of steps(); track step.stepNumber) {
+                              <div class="path-step">
+                                <span class="path-step-arrow">→</span>
+                                <span class="path-step-number">{{ step.stepNumber }}</span>
+                                <span class="path-step-url">{{ formatStepUrl(step.url) }}</span>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </section>
+          }
+
+          <!-- ====== PARTITE ABBANDONATE ====== -->
+          @if (failedGames.length > 0) {
+            <section class="sidebar-section">
+              <h3 class="sidebar-section-title">Partite abbandonate</h3>
+              <div class="game-list">
+                @for (game of failedGames; track game.id) {
+                  <div class="game-card">
+                    <div class="game-card-row">
+                      <span class="game-card-label">Codice:</span>
+                      <span class="game-card-value game-card-value--code">#{{ game.id }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Partenza:</span>
+                      <span class="game-card-value game-card-value--url">{{ game.startUrl }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Mosse:</span>
+                      <span class="game-card-value">{{ game.numberOfSteps }}</span>
+                      <button
+                        class="btn-path"
+                        (click)="togglePath(game.id)"
+                        [attr.aria-expanded]="expandedGameId() === game.id"
+                      >
+                        {{ expandedGameId() === game.id ? 'Nascondi percorso' : 'Percorso' }}
+                        <span class="btn-path-arrow">{{
+                          expandedGameId() === game.id ? '▲' : '▼'
+                        }}</span>
+                      </button>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Data:</span>
+                      <span class="game-card-value">{{ getFormattedDate(game.createdAt) }}</span>
+                    </div>
+
+                    @if (expandedGameId() === game.id) {
+                      <div class="game-card-path">
+                        @if (isLoadingSteps()) {
+                          <p class="path-message">Caricamento percorso...</p>
+                        } @else if (stepsError()) {
+                          <p class="path-message path-message--error">{{ stepsError() }}</p>
+                        } @else {
+                          <div class="path-list">
+                            @for (step of steps(); track step.stepNumber) {
+                              <div class="path-step">
+                                <span class="path-step-arrow">→</span>
+                                <span class="path-step-number">{{ step.stepNumber }}</span>
+                                <span class="path-step-url">{{ formatStepUrl(step.url) }}</span>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </section>
+          }
+
+          <!-- ====== PARTITE IN CORSO ====== -->
+          @if (inProgressGames.length > 0) {
+            <section class="sidebar-section">
+              <h3 class="sidebar-section-title">Partite in corso</h3>
+              <div class="game-list">
+                @for (game of inProgressGames; track game.id) {
+                  <div class="game-card">
+                    <div class="game-card-row">
+                      <span class="game-card-label">Codice:</span>
+                      <span class="game-card-value game-card-value--code">#{{ game.id }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Partenza:</span>
+                      <span class="game-card-value game-card-value--url">{{ game.startUrl }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Mosse:</span>
+                      <span class="game-card-value">{{ game.numberOfSteps }}</span>
+                    </div>
+                    <div class="game-card-row">
+                      <span class="game-card-label">Data:</span>
+                      <span class="game-card-value">{{ getFormattedDate(game.createdAt) }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </section>
+          }
+        }
+      }
+    </div>
+  </aside>
+</div>

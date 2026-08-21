@@ -67,6 +67,10 @@ export class GameService {
     return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/in-progress`);
   }
 
+  getMyGames(): Observable<GameSummaryResponse[]> {
+    return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/my-games`);
+  }
+
   searchGames(query: string): Observable<GameSummaryResponse[]> {
     return this.http.get<GameSummaryResponse[]>(`${this.apiUrl}/search`, {
       params: { query },

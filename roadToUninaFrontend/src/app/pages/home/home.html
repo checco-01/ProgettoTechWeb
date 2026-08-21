@@ -8,7 +8,13 @@
     <button class="topbar-link" (click)="openSearchModal()">Cerca Partite</button>
 
     @if (isLoggedIn) {
-      <span class="topbar-user">Ciao, {{ username }}</span>
+      <button
+        class="topbar-link topbar-user-btn"
+        (click)="toggleUserSidebar()"
+        aria-haspopup="true"
+      >
+        {{ username }}
+      </button>
       <button class="topbar-link topbar-link--logout" (click)="logout()">Esci</button>
     } @else {
       <button class="topbar-link" (click)="openAuthModal('login')">Accedi</button>
@@ -53,6 +59,11 @@
     (abandon)="abandonGame($event)"
     (newGame)="startNewGame()"
   />
+}
+
+<!-- ========== SIDEBAR: Riepilogo utente ========== -->
+@if (showUserSidebar()) {
+  <app-user-summary-sidebar (close)="closeUserSidebar()" />
 }
 
 <!-- ========== MODAL: Auth (Login / Registrazione) ========== -->

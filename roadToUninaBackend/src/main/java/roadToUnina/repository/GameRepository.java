@@ -15,6 +15,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     List<Game> findByGameStatusAndUserIdOrderByCreatedAtDesc(GameStatus status, Long userId);
 
+    List<Game> findByUserIdOrderByCreatedAtDesc(Long userId);
+
     @Query("""
         SELECT g FROM Game g
         WHERE g.gameStatus = :status
