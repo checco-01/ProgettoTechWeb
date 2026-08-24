@@ -7,13 +7,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roadToUnina.service.RateLimitExceededException;
 
 /**
- * Gestisce gli errori di validazione dei @RequestBody: risponde 400 con un
- * messaggio leggibile, invece dell'errore generico della security chain.
+ * Gestisce gli errori di validazione dei @RequestBody (400) e il rate
+ * limiting (429), rispondendo con messaggi leggibili.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<Map<String, String>> handleRateLimit(RateLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Map.of("error", ex.getMessage()));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {

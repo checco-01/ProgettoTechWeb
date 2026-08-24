@@ -12,6 +12,8 @@ import roadToUnina.model.types.GameStatus;
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findByGameStatusAndUserIdOrderByCreatedAtDesc(GameStatus status, Long userId);
 
+    long countByGameStatusAndUserId(GameStatus status, Long userId);
+
     List<Game> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     @Query("""

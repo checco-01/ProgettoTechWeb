@@ -3,6 +3,8 @@ package roadToUnina.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,25 @@ public class GameService {
     private final UserRepository userRepository;
     private final WikipediaClient wikipediaClient;
     private final String targetPage;
+
+    private static final int MAX_IN_PROGRESS_GAMES = 3;
+    private static final int MAX_STARTS_PER_HOUR = 30;
+    private static final int MAX_STEPS_PER_MINUTE = 30;
+    private static final long HOUR_MILLIS = 3_600_000L;
+    private static final long MINUTE_MILLIS = 60_000L;
+
+    private final Map<String, Window> startWindows = new ConcurrentHashMap<>();
+    private final Map<String, Window> stepWindows = new ConcurrentHashMap<>();
+
+    private record Window(int count, long startMillis) {
+        boolean expired(long windowMillis) {
+            return System.currentTimeMillis() - startMillis >= windowMillis;
+        }
+
+        Window increment() {
+            return new Window(count + 1, startMillis);
+        }
+    }
 
     public GameService(
             GameRepository gameRepository,
@@ -51,6 +72,14 @@ public class GameService {
                 .findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        long inProgress = gameRepository.countByGameStatusAndUserId(GameStatus.InProgress, user.getId());
+        if (inProgress >= MAX_IN_PROGRESS_GAMES) {
+            throw new RateLimitExceededException(
+                    "Hai già " + MAX_IN_PROGRESS_GAMES + " partite in corso: concludile o abbandonale");
+        }
+
+        checkStartAllowed(username);
+
         Game game = new Game(user, request.getStartUrl());
         game = gameRepository.save(game);
 
@@ -69,6 +98,9 @@ public class GameService {
         if (game.getGameStatus() != GameStatus.InProgress) {
             throw new IllegalStateException("Game is not active");
         }
+
+        // Anti-bot: limite di passaggi al minuto per utente
+        checkStepAllowed(username);
 
         // La pagina corrente è sempre quella salvata dal server (ultimo urlTo o
         // startUrl): il client non può saltare a pagine arbitrarie.
@@ -241,5 +273,27 @@ public class GameService {
                 .createdAt(game.getCreatedAt())
                 .startUrl(game.getStartUrl())
                 .build();
+    }
+
+    public void checkStartAllowed(String username) {
+        if (exceeded(startWindows, username, MAX_STARTS_PER_HOUR, HOUR_MILLIS)) {
+            throw new RateLimitExceededException("Troppe partite avviate. Riprova più tardi.");
+        }
+    }
+
+    public void checkStepAllowed(String username) {
+        if (exceeded(stepWindows, username, MAX_STEPS_PER_MINUTE, MINUTE_MILLIS)) {
+            throw new RateLimitExceededException("Troppi passaggi in poco tempo. Riprova più lentamente.");
+        }
+    }
+
+    private boolean exceeded(Map<String, Window> windows, String key, int limit, long windowMillis) {
+        Window current = windows.compute(key, (_, w) -> {
+            if (w == null || w.expired(windowMillis)) {
+                return new Window(1, System.currentTimeMillis());
+            }
+            return w.increment();
+        });
+        return current.count() > limit;
     }
 }
