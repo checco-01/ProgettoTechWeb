@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { WikipediaService } from '../../services/wikipedia.service';
-import { GameService, StepRequest } from '../../services/game.service';
+import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -20,7 +20,6 @@ export class GameComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   readonly targetPage = signal(this.wikiService.getTargetPage());
-  readonly currentTitle = signal<string>('');
   readonly currentHtml = signal<string>('');
   readonly moveCount = signal(0);
   readonly hasWon = signal(false);
@@ -106,7 +105,6 @@ export class GameComponent implements OnInit, OnDestroy {
     this.wikiService.getPage(title).subscribe({
       next: (page) => {
         this.loadPageAttempts = 0;
-        this.currentTitle.set(page.title);
         this.currentHtml.set(page.html);
         this.links.set(page.links);
         this.loading.set(false);
@@ -154,12 +152,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private recordStep(toTitle: string): void {
     if (!this.gameId) return;
 
-    const stepReq: StepRequest = {
-      urlFrom: this.currentTitle(),
-      urlTo: toTitle,
-    };
-
-    this.gameService.recordStep(this.gameId, stepReq).subscribe({
+    this.gameService.recordStep(this.gameId, toTitle).subscribe({
       error: (err) => {
         if (err.status === 401 || err.status === 403) {
           this.handleAuthError();
@@ -180,18 +173,13 @@ export class GameComponent implements OnInit, OnDestroy {
     }
 
     if (this.gameId) {
-      this.gameService
-        .completeGame(this.gameId, {
-          totalSteps: this.moveCount(),
-          totalTime: this.getElapsedSeconds(),
-        })
-        .subscribe({
-          error: (err) => {
-            if (err.status === 401 || err.status === 403) {
-              this.handleAuthError();
-            }
-          },
-        });
+      this.gameService.completeGame(this.gameId).subscribe({
+        error: (err) => {
+          if (err.status === 401 || err.status === 403) {
+            this.handleAuthError();
+          }
+        },
+      });
     }
   }
 

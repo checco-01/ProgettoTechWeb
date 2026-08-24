@@ -18,9 +18,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final AuthCookieService authCookieService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, AuthCookieService authCookieService) {
         this.jwtUtil = jwtUtil;
+        this.authCookieService = authCookieService;
     }
 
     @Override
@@ -31,6 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String token = extractToken(request);
+        if (!StringUtils.hasText(token)) {
+            // Fallback: token nel cookie httpOnly (modalità predefinita)
+            token = authCookieService.extractToken(request);
+        }
 
         if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
             String username = jwtUtil.extractUsername(token);

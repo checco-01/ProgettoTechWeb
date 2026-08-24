@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { LeaderboardModalComponent } from '../../components/leaderboard-modal/leaderboard-modal.component';
@@ -27,6 +28,7 @@ export class HomeComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private gameService = inject(GameService);
+  private platformId = inject(PLATFORM_ID);
 
   showSearchModal = signal(false);
   showLeaderboardModal = signal(false);
@@ -45,6 +47,11 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Ripristina lo stato di sessione (cookie httpOnly) verificandolo sul backend
+    if (isPlatformBrowser(this.platformId)) {
+      this.authService.checkSession().subscribe();
+    }
+
     const mode = this.route.snapshot.queryParamMap.get('auth');
     if (mode === 'login' || mode === 'register') {
       this.authMode.set(mode);

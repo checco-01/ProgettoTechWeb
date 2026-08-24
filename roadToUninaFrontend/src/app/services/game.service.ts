@@ -8,18 +8,12 @@ export interface StartGameResponse {
 }
 
 export interface StepRequest {
-  urlFrom: string;
   urlTo: string;
 }
 
 export interface StepResponse {
   url: string;
   stepNumber: number;
-}
-
-export interface CompleteGameRequest {
-  totalSteps: number;
-  totalTime: number;
 }
 
 export interface GameSummaryResponse {
@@ -51,12 +45,12 @@ export class GameService {
     });
   }
 
-  recordStep(gameId: number, request: StepRequest): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${gameId}/step`, request);
+  recordStep(gameId: number, urlTo: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${gameId}/step`, { urlTo });
   }
 
-  completeGame(gameId: number, request: CompleteGameRequest): Observable<GameSummaryResponse> {
-    return this.http.post<GameSummaryResponse>(`${this.apiUrl}/${gameId}/complete`, request);
+  completeGame(gameId: number): Observable<GameSummaryResponse> {
+    return this.http.post<GameSummaryResponse>(`${this.apiUrl}/${gameId}/complete`, null);
   }
 
   abandonGame(gameId: number): Observable<GameSummaryResponse> {

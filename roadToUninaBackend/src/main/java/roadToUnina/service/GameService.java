@@ -1,7 +1,10 @@
 package roadToUnina.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roadToUnina.dto.*;
@@ -19,16 +22,31 @@ public class GameService {
     private final GameRepository gameRepository;
     private final GameStepRepository gameStepRepository;
     private final UserRepository userRepository;
+    private final WikipediaClient wikipediaClient;
+    private final String targetPage;
 
     public GameService(
-            GameRepository gameRepository, GameStepRepository gameStepRepository, UserRepository userRepository) {
+            GameRepository gameRepository,
+            GameStepRepository gameStepRepository,
+            UserRepository userRepository,
+            WikipediaClient wikipediaClient,
+            @Value("${app.game.target}") String targetPage) {
         this.gameRepository = gameRepository;
         this.gameStepRepository = gameStepRepository;
         this.userRepository = userRepository;
+        this.wikipediaClient = wikipediaClient;
+        this.targetPage = targetPage;
     }
 
     @Transactional
     public StartGameResponse startGame(String username, StartGameRequest request) {
+        // Anti-cheat: non si può partire dall'obiettivo, nemmeno da un suo redirect
+        String resolvedStart =
+                wikipediaClient.resolveTitle(request.getStartUrl()).orElse(request.getStartUrl());
+        if (WikipediaClient.normalize(resolvedStart).equalsIgnoreCase(WikipediaClient.normalize(targetPage))) {
+            throw new IllegalArgumentException("La pagina di partenza non può essere l'obiettivo");
+        }
+
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -52,24 +70,59 @@ public class GameService {
             throw new IllegalStateException("Game is not active");
         }
 
+        // La pagina corrente è sempre quella salvata dal server (ultimo urlTo o
+        // startUrl): il client non può saltare a pagine arbitrarie.
+        String currentPage = gameStepRepository
+                .findTopByGameIdOrderByStepNumberDesc(gameId)
+                .map(GameStep::getUrlTo)
+                .orElse(game.getStartUrl());
+
+        // Anti-cheat: verifica che il link esista realmente nella pagina corrente
+        if (!wikipediaClient.hasLink(currentPage, request.getUrlTo())) {
+            throw new IllegalArgumentException("Il link non esiste nella pagina corrente");
+        }
+
         int stepNumber = game.getNumberOfSteps() + 1;
         game.setNumberOfSteps(stepNumber);
 
-        GameStep step = new GameStep(game, stepNumber, request.getUrlFrom(), request.getUrlTo());
+        GameStep step = new GameStep(game, stepNumber, currentPage, request.getUrlTo());
         gameStepRepository.save(step);
 
         gameRepository.save(game);
     }
 
     @Transactional
-    public GameSummaryResponse completeGame(Long gameId, String username, CompleteGameRequest request) {
+    public GameSummaryResponse completeGame(Long gameId, String username) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
 
         validateGameOwnership(game, username);
 
-        game.setNumberOfSteps(request.getTotalSteps());
+        if (game.getGameStatus() != GameStatus.InProgress) {
+            throw new IllegalStateException("Game is not active");
+        }
+
+        // Anti-cheat: la partita si completa solo se l'ultima pagina è l'obiettivo.
+        // Il titolo viene risolto lato server (i redirect contano, come nel frontend).
+        String lastPage = gameStepRepository
+                .findTopByGameIdOrderByStepNumberDesc(gameId)
+                .map(GameStep::getUrlTo)
+                .orElse(game.getStartUrl());
+        boolean reachedTarget = wikipediaClient
+                .resolveTitle(lastPage)
+                .map(resolved ->
+                        WikipediaClient.normalize(resolved).equalsIgnoreCase(WikipediaClient.normalize(targetPage)))
+                .orElse(false);
+        if (!reachedTarget) {
+            throw new IllegalArgumentException("Obiettivo non raggiunto: non puoi completare la partita");
+        }
+
+        // Anti-cheat: mosse e tempo sono calcolati dal server, nessun valore
+        // accettato dal client. Il tempo è la differenza tra ora e la creazione
+        // della partita (stessa semantica del timer lato frontend).
+        long elapsedSeconds = Math.max(
+                0, Duration.between(game.getCreatedAt(), LocalDateTime.now()).getSeconds());
         game.setGameStatus(GameStatus.Completed);
-        game.setTimeElapsedSeconds(request.getTotalTime());
+        game.setTimeElapsedSeconds((int) elapsedSeconds);
         gameRepository.save(game);
 
         return toSummary(game);
@@ -80,6 +133,10 @@ public class GameService {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
 
         validateGameOwnership(game, username);
+
+        if (game.getGameStatus() != GameStatus.InProgress) {
+            throw new IllegalStateException("Game is not active");
+        }
 
         game.setGameStatus(GameStatus.Failed);
         gameRepository.save(game);

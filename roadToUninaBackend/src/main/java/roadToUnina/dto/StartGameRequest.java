@@ -1,6 +1,7 @@
 package roadToUnina.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartGameRequest {
-    @NotBlank private String startUrl;
+    @NotBlank @Size(max = 500) private String startUrl;
 }

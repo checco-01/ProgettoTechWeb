@@ -1,7 +1,7 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { Observable, of, tap } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 export interface AuthRequest {
   username: string;
@@ -9,9 +9,12 @@ export interface AuthRequest {
 }
 
 export interface AuthResponse {
-  token: string;
   username: string;
   message: string;
+}
+
+export interface SessionResponse {
+  username: string;
 }
 
 @Injectable({
@@ -19,67 +22,45 @@ export interface AuthResponse {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
-  private tokenKey = 'auth_token';
-  private usernameKey = 'auth_username';
+  private currentUser = signal<string | null>(null);
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   register(data: AuthRequest): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/register`, data)
-      .pipe(tap((response) => this.storeAuthData(response)));
+      .pipe(tap((response) => this.currentUser.set(response.username)));
   }
 
   login(data: AuthRequest): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, data)
-      .pipe(tap((response) => this.storeAuthData(response)));
+      .pipe(tap((response) => this.currentUser.set(response.username)));
   }
 
   logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.tokenKey);
-      localStorage.removeItem(this.usernameKey);
-    }
+    this.currentUser.set(null);
+    // Il cookie httpOnly viene eliminato dal backend: il JS non può cancellarlo da solo.
+    this.http.post<void>(`${this.apiUrl}/logout`, {}).subscribe({ error: () => {} });
   }
 
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(this.tokenKey);
-    }
-    return null;
-  }
-
-  getUsername(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(this.usernameKey);
-    }
-    return null;
+  /** Verifica la sessione sul backend (/me): il token è nel cookie httpOnly, non nel JS. */
+  checkSession(): Observable<boolean> {
+    return this.http.get<SessionResponse>(`${this.apiUrl}/me`).pipe(
+      tap((response) => this.currentUser.set(response.username)),
+      map(() => true),
+      catchError(() => {
+        this.currentUser.set(null);
+        return of(false);
+      }),
+    );
   }
 
   isLoggedIn(): boolean {
-    if (!isPlatformBrowser(this.platformId)) return false;
-    const token = localStorage.getItem(this.tokenKey);
-    if (!token) return false;
-    return !this.isTokenExpired(token);
+    return this.currentUser() !== null;
   }
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return typeof payload.exp === 'number' && payload.exp * 1000 < Date.now();
-    } catch {
-      return true;
-    }
-  }
-
-  private storeAuthData(response: AuthResponse): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(this.tokenKey, response.token);
-      localStorage.setItem(this.usernameKey, response.username);
-    }
+  getUsername(): string | null {
+    return this.currentUser();
   }
 }

@@ -44,13 +44,14 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/complete")
-    public ResponseEntity<?> completeGame(
-            @PathVariable Long gameId, @Valid @RequestBody CompleteGameRequest request, Authentication auth) {
+    public ResponseEntity<?> completeGame(@PathVariable Long gameId, Authentication auth) {
         try {
-            GameSummaryResponse response = gameService.completeGame(gameId, auth.getName(), request);
+            GameSummaryResponse response = gameService.completeGame(gameId, auth.getName());
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -61,6 +62,8 @@ public class GameController {
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
         }
     }
 
