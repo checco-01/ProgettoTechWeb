@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { WikipediaService } from '../../services/wikipedia.service';
@@ -18,6 +19,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
   readonly targetPage = signal(this.wikiService.getTargetPage());
   readonly currentHtml = signal<string>('');
@@ -35,6 +37,10 @@ export class GameComponent implements OnInit, OnDestroy {
   private loadPageAttempts = 0;
 
   ngOnInit(): void {
+    // La pagina di gioco dipende da API browser (timer, DOM, chiamate HTTP):
+    // se viene eseguita lato server (prerender/SSR) non facciamo nulla.
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const gameIdParam = this.route.snapshot.queryParamMap.get('gameId');
     if (gameIdParam) {
       this.resumeGame(Number(gameIdParam));
