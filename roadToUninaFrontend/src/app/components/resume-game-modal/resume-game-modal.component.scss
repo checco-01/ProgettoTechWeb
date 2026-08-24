@@ -95,6 +95,57 @@
   margin-top: 1rem;
 }
 
+/* Tooltip per il bottone "Nuova Partita" disabilitato (3 partite in corso) */
+.tooltip {
+  position: relative;
+  display: block;
+
+  .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #1b415d;
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #1b415d;
+    }
+  }
+
+  &:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 .btn {
   display: block;
   width: 100%;

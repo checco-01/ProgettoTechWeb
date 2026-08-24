@@ -20,7 +20,14 @@
       </div>
     }
     <div class="modal-actions">
-      <button class="btn btn-secondary" (click)="newGame.emit()">Nuova Partita</button>
+      <span class="tooltip" [class.tooltip--disabled]="maxGamesReached">
+        <button class="btn btn-secondary" [disabled]="maxGamesReached" (click)="newGame.emit()">
+          Nuova Partita
+        </button>
+        @if (maxGamesReached) {
+          <span class="tooltip-text">Impossibile avere più di 3 partite in corso</span>
+        }
+      </span>
     </div>
   </div>
 </div>

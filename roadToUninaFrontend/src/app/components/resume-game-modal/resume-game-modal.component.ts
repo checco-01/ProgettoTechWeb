@@ -14,6 +14,13 @@ export class ResumeGameModalComponent {
   @Output() abandon = new EventEmitter<GameSummaryResponse>();
   @Output() newGame = new EventEmitter<void>();
 
+  /** Limite di partite in corso: deve coincidere con GameService.MAX_IN_PROGRESS_GAMES (backend). */
+  private static readonly MAX_IN_PROGRESS_GAMES = 3;
+
+  get maxGamesReached(): boolean {
+    return this.games.length >= ResumeGameModalComponent.MAX_IN_PROGRESS_GAMES;
+  }
+
   getElapsedTime(createdAt: string): string {
     if (!createdAt) return '0s';
     const created = new Date(createdAt);
