@@ -55,13 +55,15 @@ export class WikipediaService {
 
   private extractLinks(html: string): string[] {
     const linkSet = new Set<string>();
-    const regex = /<a\s[^>]*href="\/wiki\/([^"#]+?)"[^>]*?(?:class="([^"]*)")?[^>]*>/gi;
+    const regex = /<a\b[^>]*?\bhref="\/wiki\/([^"#]+?)"[^>]*>/gi;
     let match: RegExpExecArray | null;
     while ((match = regex.exec(html)) !== null) {
+      const anchorTag = match[0];
       const title = decodeURIComponent(match[1]);
-      const cssClass = match[2] || '';
 
-      if (cssClass.includes('new') || cssClass.includes('mw-disambig')) continue;
+      if (anchorTag.includes('class="new') || anchorTag.includes('class="mw-disambig')) {
+        continue;
+      }
 
       if (
         title.startsWith('Speciale:') ||
