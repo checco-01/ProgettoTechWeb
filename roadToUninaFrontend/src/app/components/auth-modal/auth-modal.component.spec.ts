@@ -141,12 +141,12 @@ describe('AuthModalComponent', () => {
     expect(button.disabled).toBe(false);
   });
 
-  it('should emit close when clicking the overlay', () => {
+  it('should emit close when clicking the close button', () => {
     const spy = vi.fn();
     component.close.subscribe(spy);
 
-    const overlay = fixture.nativeElement.querySelector('.modal-overlay') as HTMLElement;
-    overlay.click();
+    const button = fixture.nativeElement.querySelector('.modal-close') as HTMLButtonElement;
+    button.click();
 
     expect(spy).toHaveBeenCalled();
   });

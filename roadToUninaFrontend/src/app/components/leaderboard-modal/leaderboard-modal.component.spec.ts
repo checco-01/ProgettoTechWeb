@@ -71,12 +71,12 @@ describe('LeaderboardModalComponent', () => {
     expect(component.medalClass(4)).toBe('');
   });
 
-  it('should emit close when clicking the overlay', () => {
+  it('should emit close when clicking the close button', () => {
     setup(of([]));
     const spy = vi.fn();
     component.close.subscribe(spy);
 
-    (fixture.nativeElement.querySelector('.modal-overlay') as HTMLElement).click();
+    (fixture.nativeElement.querySelector('.modal-close') as HTMLButtonElement).click();
 
     expect(spy).toHaveBeenCalled();
   });

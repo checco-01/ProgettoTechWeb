@@ -121,11 +121,11 @@ describe('SearchGameModalComponent', () => {
     expect(component.stepsError()).toContain('Impossibile caricare il percorso');
   });
 
-  it('should emit close when clicking the overlay', () => {
+  it('should emit close when clicking the close button', () => {
     const spy = vi.fn();
     component.close.subscribe(spy);
 
-    (fixture.nativeElement.querySelector('.modal-overlay') as HTMLElement).click();
+    (fixture.nativeElement.querySelector('.modal-close') as HTMLButtonElement).click();
 
     expect(spy).toHaveBeenCalled();
   });

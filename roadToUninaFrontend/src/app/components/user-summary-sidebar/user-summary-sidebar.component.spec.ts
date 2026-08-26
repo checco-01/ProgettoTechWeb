@@ -143,13 +143,13 @@ describe('UserSummarySidebarComponent', () => {
     expect(component.stepsError()).toContain('Impossibile caricare il percorso');
   });
 
-  it('should emit close when clicking the overlay', () => {
+  it('should emit close when clicking the close button', () => {
     fixture.detectChanges();
 
     const spy = vi.fn();
     component.close.subscribe(spy);
 
-    (fixture.nativeElement.querySelector('.sidebar-overlay') as HTMLElement).click();
+    (fixture.nativeElement.querySelector('.sidebar-close') as HTMLButtonElement).click();
 
     expect(spy).toHaveBeenCalled();
   });

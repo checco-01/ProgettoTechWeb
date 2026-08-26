@@ -225,7 +225,7 @@ export class GameComponent implements OnInit, OnDestroy {
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
-  restart(): void {
+  startNewGame(): void {
     this.moveCount.set(0);
     this.hasWon.set(false);
     this.loading.set(true);

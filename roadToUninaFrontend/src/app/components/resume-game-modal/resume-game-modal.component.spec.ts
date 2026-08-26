@@ -90,17 +90,6 @@ describe('ResumeGameModalComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should emit close when clicking the overlay', () => {
-    fixture.detectChanges();
-
-    const spy = vi.fn();
-    component.close.subscribe(spy);
-
-    (fixture.nativeElement.querySelector('.modal-overlay') as HTMLElement).click();
-
-    expect(spy).toHaveBeenCalled();
-  });
-
   it('getElapsedTime should format the seconds elapsed since creation', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-01T00:01:30'));
@@ -109,4 +98,12 @@ describe('ResumeGameModalComponent', () => {
     expect(component.getElapsedTime('2026-01-01T00:00:05')).toBe('1:25');
   });
 
+  it('should emit close when clicking the close button', () => {
+    const spy = vi.fn();
+    component.close.subscribe(spy);
+
+    (fixture.nativeElement.querySelector('.modal-close') as HTMLButtonElement).click();
+
+    expect(spy).toHaveBeenCalled();
+  });
 });

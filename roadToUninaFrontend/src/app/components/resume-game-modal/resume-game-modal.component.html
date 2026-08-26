@@ -1,5 +1,5 @@
-<div class="modal-overlay" (click)="close.emit()">
-  <div class="modal" (click)="$event.stopPropagation()">
+<div class="modal-overlay">
+  <div class="modal">
     <button class="modal-close" (click)="close.emit()">&times;</button>
     <h2>Hai {{ games.length === 1 ? 'una partita' : games.length + ' partite' }} in corso!</h2>
     <p>Riprendi una partita, abbandonala o iniziane una nuova.</p>
