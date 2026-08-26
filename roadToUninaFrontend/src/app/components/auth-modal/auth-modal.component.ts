@@ -41,7 +41,10 @@ export class AuthModalComponent implements OnChanges {
   }
 
   switchMode(newMode: 'login' | 'register'): void {
+    if (this.mode === newMode) return;
     this.mode = newMode;
+    this.buildForm();
+    this.errorMessage.set('');
   }
 
   get isLogin(): boolean {
