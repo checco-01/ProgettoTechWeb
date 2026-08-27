@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roadToUnina.dto.*;
@@ -25,13 +24,15 @@ public class GameService {
     private final GameStepRepository gameStepRepository;
     private final UserRepository userRepository;
     private final WikipediaClient wikipediaClient;
-    private final String targetPage;
 
     private static final int MAX_IN_PROGRESS_GAMES = 3;
     private static final int MAX_STARTS_PER_HOUR = 30;
     private static final int MAX_STEPS_PER_MINUTE = 30;
     private static final long HOUR_MILLIS = 3_600_000L;
     private static final long MINUTE_MILLIS = 60_000L;
+
+    /** Pagina obiettivo del gioco (titolo Wikipedia), hardcoded: è fissa per il gioco. */
+    private static final String TARGET_PAGE = "Università_degli_Studi_di_Napoli_Federico_II";
 
     private final Map<String, Window> startWindows = new ConcurrentHashMap<>();
     private final Map<String, Window> stepWindows = new ConcurrentHashMap<>();
@@ -50,13 +51,11 @@ public class GameService {
             GameRepository gameRepository,
             GameStepRepository gameStepRepository,
             UserRepository userRepository,
-            WikipediaClient wikipediaClient,
-            @Value("${app.game.target}") String targetPage) {
+            WikipediaClient wikipediaClient) {
         this.gameRepository = gameRepository;
         this.gameStepRepository = gameStepRepository;
         this.userRepository = userRepository;
         this.wikipediaClient = wikipediaClient;
-        this.targetPage = targetPage;
     }
 
     @Transactional
@@ -64,7 +63,7 @@ public class GameService {
         // Anti-cheat: non si può partire dall'obiettivo, nemmeno da un suo redirect
         String resolvedStart =
                 wikipediaClient.resolveTitle(request.getStartUrl()).orElse(request.getStartUrl());
-        if (WikipediaClient.normalize(resolvedStart).equalsIgnoreCase(WikipediaClient.normalize(targetPage))) {
+        if (WikipediaClient.normalize(resolvedStart).equalsIgnoreCase(WikipediaClient.normalize(TARGET_PAGE))) {
             throw new IllegalArgumentException("La pagina di partenza non può essere l'obiettivo");
         }
 
@@ -142,7 +141,7 @@ public class GameService {
         boolean reachedTarget = wikipediaClient
                 .resolveTitle(lastPage)
                 .map(resolved ->
-                        WikipediaClient.normalize(resolved).equalsIgnoreCase(WikipediaClient.normalize(targetPage)))
+                        WikipediaClient.normalize(resolved).equalsIgnoreCase(WikipediaClient.normalize(TARGET_PAGE)))
                 .orElse(false);
         if (!reachedTarget) {
             throw new IllegalArgumentException("Obiettivo non raggiunto: non puoi completare la partita");
