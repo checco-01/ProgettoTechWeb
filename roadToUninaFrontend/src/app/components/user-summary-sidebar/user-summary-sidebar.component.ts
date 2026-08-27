@@ -43,6 +43,14 @@ export class UserSummarySidebarComponent implements OnInit {
     return this.games().filter((g) => g.gameStatus === 'InProgress');
   }
 
+  /** Mosse medie delle sole partite vinte, formattate come nella classifica. */
+  get averageSteps(): string {
+    if (this.completedGames.length === 0) return '—';
+    const total = this.completedGames.reduce((sum, g) => sum + (g.numberOfSteps || 0), 0);
+    const avg = total / this.completedGames.length;
+    return (Math.round(avg * 10) / 10).toString().replace('.', ',');
+  }
+
   loadGames(): void {
     this.isLoading.set(true);
     this.error.set('');

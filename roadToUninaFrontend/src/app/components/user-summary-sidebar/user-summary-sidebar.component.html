@@ -31,6 +31,10 @@
             <span class="summary-card-value">{{ inProgressGames.length }}</span>
             <span class="summary-card-label">In corso</span>
           </div>
+          <div class="summary-card summary-card--steps">
+            <span class="summary-card-value">{{ averageSteps }}</span>
+            <span class="summary-card-label">Mosse medie</span>
+          </div>
         </div>
 
         @if (games().length === 0) {
