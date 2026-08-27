@@ -65,6 +65,8 @@ Thumbs.db
 
 ### Coverage / test reports ###
 **/coverage/
+**/test-results/
+**/playwright-report/
 __screenshots__/
 testem.log
 connect.lock
