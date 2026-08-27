@@ -47,16 +47,14 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Ripristina lo stato di sessione (cookie httpOnly) verificandolo sul backend
     if (isPlatformBrowser(this.platformId)) {
       this.authService.checkSession().subscribe();
-    }
-
-    const mode = this.route.snapshot.queryParamMap.get('auth');
-    if (mode === 'login' || mode === 'register') {
-      this.authMode.set(mode);
-      this.showAuthModal.set(true);
-      this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      const mode = this.route.snapshot.queryParamMap.get('auth');
+      if (mode === 'login' || mode === 'register') {
+        this.authMode.set(mode);
+        this.showAuthModal.set(true);
+        this.router.navigate([], { queryParams: {}, replaceUrl: true });
+      }
     }
   }
 
