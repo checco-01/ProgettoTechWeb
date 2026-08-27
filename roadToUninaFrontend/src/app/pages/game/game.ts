@@ -202,6 +202,14 @@ export class GameComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
+  /**
+   * Torna alla home senza abbandonare la partita: la partita resta in corso
+   * sul backend e potrà essere ripresa dalla modale di ripresa in home.
+   */
+  backToHome(): void {
+    this.router.navigate(['/']);
+  }
+
   private startTimer(): void {
     if (this.timerInterval) return;
     this.updateElapsedTime();

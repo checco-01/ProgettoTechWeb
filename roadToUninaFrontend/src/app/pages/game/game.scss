@@ -13,6 +13,39 @@
   color: #fff;
 }
 
+.game-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.game-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+.game-back-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .game-topbar-brand {
   color: #fff;
   font-size: 1.1rem;
@@ -379,6 +412,14 @@
   .game-info {
     gap: 0.75rem;
     font-size: 0.8rem;
+  }
+
+  .game-back-btn {
+    padding: 0.35rem 0.6rem;
+  }
+
+  .game-back-label {
+    display: none;
   }
 
   .game-target-name {

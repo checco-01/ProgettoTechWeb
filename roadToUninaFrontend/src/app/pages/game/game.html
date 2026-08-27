@@ -1,6 +1,12 @@
 <!-- ========== TOPBAR DI GIOCO ========== -->
 <header class="game-topbar">
-  <a routerLink="/" class="game-topbar-brand">Road to Unina</a>
+  <div class="game-topbar-left">
+    <button class="game-back-btn" (click)="backToHome()">
+      <span class="game-back-icon" aria-hidden="true">←</span>
+      <span class="game-back-label">Torna indietro</span>
+    </button>
+    <a routerLink="/" class="game-topbar-brand">Road to Unina</a>
+  </div>
 
   <div class="game-info">
     <div class="game-target">
