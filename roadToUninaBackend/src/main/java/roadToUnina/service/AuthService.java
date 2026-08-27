@@ -28,7 +28,7 @@ public class AuthService {
 
     public String register(AuthRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new IllegalArgumentException("Registration failed");
         }
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
