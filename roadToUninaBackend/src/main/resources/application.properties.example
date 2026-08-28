@@ -1,0 +1,48 @@
+# ============================================================
+# TEMPLATE DI CONFIGURAZIONE - NON CONTIENE SEGRETI REALI.
+#
+# application.properties NON è committato (vedi .gitignore), quindi dopo
+# un clone da Git va creato copiando questo file:
+#
+#   cp application.properties.example application.properties
+#
+# Il progetto è pensato per girare in locale: i valori di default qui sotto
+# funzionano subito (compreso il seed in roadToUninaBackend/sql/). L'unica
+# cosa da impostare è la password del tuo utente MySQL (spring.datasource.password).
+# Il segreto JWT è un dummy valido per lo sviluppo locale: cambialo in produzione.
+# Genera un segreto con:  openssl rand -base64 64
+# ============================================================
+
+# Database configuration (MySQL locale, database "roadtounina")
+spring.datasource.url=jdbc:mysql://localhost:3306/roadtounina
+spring.datasource.username=RoadToUnina
+spring.datasource.password=la_tua_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA / Hibernate
+# ddl-auto=update: Hibernate crea/aggiorna lo schema automaticamente
+# (necessario per poter applicare gli script di seed). In ambienti più
+# prudenti si può impostare validate/none con la variabile DDL_AUTO.
+spring.jpa.hibernate.ddl-auto=${DDL_AUTO:update}
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# Timeout HTTP verso servizi esterni (WikipediaClient)
+spring.http.clients.connect-timeout=5s
+spring.http.clients.read-timeout=10s
+
+# JWT: segreto OBBLIGATORIO (almeno 32 byte per HS256).
+# Il valore di default è un dummy valido per lo sviluppo locale: cambialo
+# prima di andare in produzione. Genera con:  openssl rand -base64 64
+app.jwt.secret=${JWT_SECRET:CHANGE_ME_dummy_jwt_secret_local_dev_only_1234567890}
+app.jwt.expiration-ms=86400000
+
+# Cookie httpOnly: in produzione (HTTPS) impostare COOKIE_SECURE=true
+app.jwt.cookie-secure=${COOKIE_SECURE:false}
+
+# CORS: origini consentite separate da virgola (in produzione l'URL reale del frontend)
+app.cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+
+# Server
+server.port=8080
