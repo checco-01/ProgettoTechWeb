@@ -60,10 +60,7 @@ test.describe('Auth', () => {
     await page.getByLabel('Username').fill('mario');
     await page.getByLabel('Password', { exact: true }).fill('secret1');
     await page.getByLabel('Conferma Password').fill('secret1');
-    await page
-      .locator('form')
-      .getByRole('button', { name: 'Registrati', exact: true })
-      .click();
+    await page.locator('form').getByRole('button', { name: 'Registrati', exact: true }).click();
 
     await expect(page.getByText('Crea un Account')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'mario' })).toBeVisible();

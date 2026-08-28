@@ -89,8 +89,6 @@ test.describe('Gioco', () => {
     await page.getByRole('button', { name: 'Riprendi' }).click();
     await expect(page.locator('.game-moves-count')).toHaveText('2');
     await expect(page.locator('.game-target-name')).toHaveText(TARGET_TITLE);
-    await expect(
-      page.getByText('Contenuto di esempio per "Campania".'),
-    ).toBeVisible();
+    await expect(page.getByText('Contenuto di esempio per "Campania".')).toBeVisible();
   });
 });

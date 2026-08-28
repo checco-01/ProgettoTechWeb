@@ -79,7 +79,9 @@ const SESSION_COOKIE_VALUE = 'road-to-unina-test';
 const SESSION_COOKIE_HEADER = `${SESSION_COOKIE_NAME}=${SESSION_COOKIE_VALUE}; Path=/; HttpOnly; SameSite=Lax`;
 
 function hasSessionCookie(request: { headers(): Record<string, string> }): boolean {
-  return (request.headers()['cookie'] ?? '').includes(`${SESSION_COOKIE_NAME}=${SESSION_COOKIE_VALUE}`);
+  return (request.headers()['cookie'] ?? '').includes(
+    `${SESSION_COOKIE_NAME}=${SESSION_COOKIE_VALUE}`,
+  );
 }
 
 /** Cookie di sessione "httpOnly" simulato, usato da loginViaUi. */
@@ -97,8 +99,12 @@ function currentGame(state: ApiState, id: number): GameSummary | undefined {
 
 /** Registra tutti i mock di rete per una pagina. */
 export async function mockApi(page: Page, state: ApiState): Promise<void> {
-  const fulfillJson = (route: Route, body: unknown, status = 200, extraHeaders: Record<string, string> = {}) =>
-    route.fulfill({ status, json: body, headers: extraHeaders });
+  const fulfillJson = (
+    route: Route,
+    body: unknown,
+    status = 200,
+    extraHeaders: Record<string, string> = {},
+  ) => route.fulfill({ status, json: body, headers: extraHeaders });
 
   // ---------------------------------------------------------------- Auth
   await page.route('**/api/auth**', async (route) => {
@@ -132,9 +138,14 @@ export async function mockApi(page: Page, state: ApiState): Promise<void> {
       const body = route.request().postDataJSON() as { username: string; password: string };
       state.username = body.username;
       state.validUsers[body.username] = body.password;
-      await fulfillJson(route, { username: body.username, message: 'Registrazione completata' }, 200, {
-        'set-cookie': SESSION_COOKIE_HEADER,
-      });
+      await fulfillJson(
+        route,
+        { username: body.username, message: 'Registrazione completata' },
+        200,
+        {
+          'set-cookie': SESSION_COOKIE_HEADER,
+        },
+      );
       return;
     }
 
@@ -260,7 +271,10 @@ export async function mockApi(page: Page, state: ApiState): Promise<void> {
     if (action === 'parse') {
       const pageTitle = url.searchParams.get('page') ?? state.startTitle;
       await fulfillJson(route, {
-        parse: { title: pageTitle, text: { '*': state.wikiPages[pageTitle] ?? fallbackHtml(pageTitle) } },
+        parse: {
+          title: pageTitle,
+          text: { '*': state.wikiPages[pageTitle] ?? fallbackHtml(pageTitle) },
+        },
       });
       return;
     }
@@ -298,7 +312,11 @@ function emptySummary(id: number, gameStatus: GameSummary['gameStatus']): GameSu
 // ---------------------------------------------------------------- Helper di flusso
 
 /** Effettua il login tramite l'interfaccia (modale) e attende la sessione attiva. */
-export async function loginViaUi(page: Page, username = 'mario', password = 'secret1'): Promise<void> {
+export async function loginViaUi(
+  page: Page,
+  username = 'mario',
+  password = 'secret1',
+): Promise<void> {
   await page.goto('/');
   await page.getByRole('button', { name: 'Accedi', exact: true }).click();
   await page.getByLabel('Username').fill(username);
