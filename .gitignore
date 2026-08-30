@@ -24,7 +24,6 @@ build/
 
 ### Maven / Java ###
 **/target/
-**/.mvn/
 *.class
 *.jar
 *.war
