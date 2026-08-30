@@ -13,9 +13,9 @@
 
     <div class="sidebar-body">
       @if (isLoading()) {
-        <p class="sidebar-message">Caricamento riepilogo...</p>
+        <p class="message">Caricamento riepilogo...</p>
       } @else if (error()) {
-        <p class="sidebar-message sidebar-message--error">{{ error() }}</p>
+        <p class="message message--error">{{ error() }}</p>
       } @else {
         <!-- ====== RIEPILOGO ====== -->
         <div class="summary-cards">
@@ -38,7 +38,7 @@
         </div>
 
         @if (games().length === 0) {
-          <p class="sidebar-message">Non hai ancora giocato nessuna partita.</p>
+          <p class="message">Non hai ancora giocato nessuna partita.</p>
         } @else {
           <!-- ====== PARTITE VINTE ====== -->
           @if (completedGames.length > 0) {

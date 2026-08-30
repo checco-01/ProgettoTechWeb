@@ -5,11 +5,11 @@
     <p>I 10 migliori navigatori di Wikipedia</p>
 
     @if (isLoading()) {
-      <p class="leaderboard-message">Caricamento classifica...</p>
+      <p class="message">Caricamento classifica...</p>
     } @else if (error()) {
-      <p class="leaderboard-message leaderboard-message--error">{{ error() }}</p>
+      <p class="message message--error">{{ error() }}</p>
     } @else if (entries().length === 0) {
-      <p class="leaderboard-message">
+      <p class="message">
         Nessuna sfida completata ancora. Sii il primo a comparire in classifica!
       </p>
     } @else {

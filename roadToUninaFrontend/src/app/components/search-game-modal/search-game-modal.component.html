@@ -18,12 +18,12 @@
     </div>
 
     @if (error()) {
-      <p class="search-message search-message--error">{{ error() }}</p>
+      <p class="message message--error">{{ error() }}</p>
     }
 
     @if (hasSearched() && !isLoading()) {
       @if (results().length === 0) {
-        <p class="search-message">Nessuna partita completata trovata per "{{ searchQuery() }}".</p>
+        <p class="message">Nessuna partita completata trovata per "{{ searchQuery() }}".</p>
       } @else {
         <div class="search-results">
           <p class="search-count">

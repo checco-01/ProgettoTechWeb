@@ -1,1 +1,305 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   ROAD TO UNINA — STILI GLOBALI
+   ============================================================
+   In questo file vivono:
+   1. I design token (variabili CSS) della palette
+   2. Le classi condivise dai componenti (modali, bottoni, form, messaggi)
+   3. Le animazioni @keyframes comuni (in CSS sono globali per definizione)
+
+   I componenti usano i token tramite var(--...) e definiscono solo
+   le eccezioni specifiche nei propri file .scss.
+   ============================================================ */
+
+/* ---------- 1. DESIGN TOKENS ---------- */
+:root {
+  /* Palette */
+  --color-primary: #1b415d;          /* blu brand (topbar, titoli) */
+  --color-secondary: #2a5f82;        /* blu medio (hover, bordi, accenti) */
+  --color-text: #222;
+  --color-text-muted: #5a6c7d;       /* testo secondario */
+  --color-text-faint: #8899aa;       /* testo attenuato */
+  --color-text-light: #9fb0c0;       /* frecce/icone */
+  --color-border: #e1e5ee;           /* bordi input/card */
+  --color-border-soft: #eef1f6;      /* righe tabella */
+  --color-bg: #fff;
+  --color-bg-soft: #fafbfd;          /* sfondo card */
+  --color-bg-tint: #f0f4f8;          /* sfondo evidenziato */
+  --color-bg-tint-strong: #d9e2ec;   /* sfondo hero */
+
+  /* Errori / pericolo */
+  --color-danger: #b3402a;           /* rosso errori */
+  --color-danger-dark: #c0392b;      /* rosso scuro (btn danger) */
+  --color-danger-soft: #ff6b6b;      /* rosso tenue su topbar scuro */
+  --color-danger-text: #dc3545;      /* validazione form */
+  --color-error-bg: #fdecea;         /* sfondo messaggi di errore */
+  --color-error-border: #f8bbd0;
+  --color-error-soft-bg: #fce4ec;    /* sfondo alert error */
+  --color-error-soft-text: #c62828;
+
+  /* Accenti */
+  --color-gold: #ffd700;             /* nome pagina target */
+
+  /* Gradient e ombre */
+  --gradient-primary: linear-gradient(135deg, #1b415d 0%, #2a5f82 100%);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 6px 24px rgba(27, 65, 93, 0.3);
+
+  /* Raggi e layer */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --z-modal: 1000;
+}
+
+/* ---------- 2. BOTTONI ---------- */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s;
+  font-family: inherit;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--color-bg);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(27, 65, 93, 0.35);
+  }
+}
+
+.btn-secondary {
+  background: var(--color-border);
+  color: var(--color-primary);
+
+  &:hover:not(:disabled) {
+    background: #d1d5e0;
+  }
+}
+
+.btn-danger {
+  background: var(--color-danger-dark);
+  color: var(--color-bg);
+
+  &:hover:not(:disabled) {
+    background: #a93226;
+  }
+}
+
+/* ---------- 3. FORM ---------- */
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+/* ---------- 4. MODALI ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-modal);
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: var(--shadow-modal);
+  animation: modalIn 0.25s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  p {
+    color: var(--color-text-muted);
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  &.modal--wide {
+    max-width: 560px;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    color: #333;
+  }
+}
+
+/* ---------- 5. MESSAGGI INFORMATIVI ---------- */
+.message {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-tint);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+
+  &--error {
+    background: var(--color-error-bg);
+    color: var(--color-danger);
+  }
+}
+
+/* ---------- 6. ALERT (errori form) ---------- */
+.alert {
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+
+  &.alert-error {
+    background: var(--color-error-soft-bg);
+    color: var(--color-error-soft-text);
+    border: 1px solid var(--color-error-border);
+  }
+}
+
+/* ---------- 7. PERCORSI (ricerca partite e sidebar) ---------- */
+.btn-path {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--color-secondary);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--color-secondary);
+    color: var(--color-bg);
+  }
+
+  .btn-path-arrow {
+    font-size: 0.65rem;
+  }
+}
+
+.path-message {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+
+  &--error {
+    color: var(--color-danger);
+  }
+}
+
+/* ---------- 8. ANIMAZIONI COMUNI ---------- */
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pathIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sidebarIn {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

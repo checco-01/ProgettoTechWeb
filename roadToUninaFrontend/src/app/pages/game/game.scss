@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1b415d;
+  background: var(--color-primary);
   padding: 0 1.5rem;
   height: 56px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
@@ -75,7 +75,7 @@
 
 .game-target-name {
   font-weight: 600;
-  color: #ffd700;
+  color: var(--color-gold);
 }
 
 .game-moves {
@@ -121,7 +121,7 @@
 .game-abandon-btn {
   background: rgba(255, 107, 107, 0.2);
   border: 1px solid rgba(255, 107, 107, 0.4);
-  color: #ff6b6b;
+  color: var(--color-danger-soft);
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.25rem 0.7rem;
@@ -144,7 +144,7 @@
   justify-content: center;
   min-height: calc(100vh - 56px);
   gap: 1rem;
-  color: #5a6c7d;
+  color: var(--color-text-muted);
 
   p {
     font-size: 1.1rem;
@@ -154,17 +154,13 @@
 .game-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #e1e5ee;
-  border-top-color: #1b415d;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* @keyframes spin, fadeIn e popIn sono globali in styles.scss */
 
 /* ========== ERRORE (pop-up) ========== */
 .game-error-overlay {
@@ -192,18 +188,18 @@
   h2 {
     font-size: 1.5rem;
     margin: 0 0 0.75rem;
-    color: #c0392b;
+    color: var(--color-danger-dark);
   }
 
   p {
-    color: #5a6c7d;
+    color: var(--color-text-muted);
     margin: 0 0 0.75rem;
     line-height: 1.5;
   }
 
   .game-error-hint {
     font-size: 0.9rem;
-    color: #8899aa;
+    color: var(--color-text-faint);
   }
 }
 
@@ -214,24 +210,10 @@
   margin-top: 1.5rem;
 
   .btn {
+    width: auto;
     padding: 0.7rem 1.5rem;
     border-radius: 10px;
     font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: inherit;
-    text-decoration: none;
-    border: none;
-
-    &.btn-secondary {
-      background: #e1e5ee;
-      color: #1b415d;
-
-      &:hover {
-        background: #d1d5e0;
-      }
-    }
   }
 }
 
@@ -248,14 +230,7 @@
   animation: fadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+
 
 .game-win-card {
   background: #fff;
@@ -270,34 +245,25 @@
   h1 {
     font-size: 2rem;
     margin: 0 0 0.5rem;
-    color: #1b415d;
+    color: var(--color-primary);
   }
 
   p {
-    color: #5a6c7d;
+    color: var(--color-text-muted);
     margin: 0 0 0.75rem;
     line-height: 1.5;
 
     strong {
-      color: #1b415d;
+      color: var(--color-primary);
     }
 
     em {
-      color: #8899aa;
+      color: var(--color-text-faint);
     }
   }
 }
 
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
+
 
 .game-win-actions {
   display: flex;
@@ -306,34 +272,10 @@
   margin-top: 1.5rem;
 
   .btn {
+    width: auto;
     padding: 0.7rem 1.5rem;
     border-radius: 10px;
     font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: inherit;
-    text-decoration: none;
-    border: none;
-
-    &.btn-primary {
-      background: linear-gradient(135deg, #1b415d 0%, #2a5f82 100%);
-      color: #fff;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(27, 65, 93, 0.35);
-      }
-    }
-
-    &.btn-secondary {
-      background: #e1e5ee;
-      color: #1b415d;
-
-      &:hover {
-        background: #d1d5e0;
-      }
-    }
   }
 }
 
