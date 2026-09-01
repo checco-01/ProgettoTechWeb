@@ -1,4 +1,4 @@
-package roadToUnina.service;
+package roadToUnina.client;
 
 import java.util.HashSet;
 import java.util.List;

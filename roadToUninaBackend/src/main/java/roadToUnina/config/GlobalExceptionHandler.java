@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roadToUnina.service.RateLimitExceededException;
+import roadToUnina.exception.RateLimitExceededException;
 
 /**
  * Gestisce gli errori di validazione dei @RequestBody (400) e il rate
