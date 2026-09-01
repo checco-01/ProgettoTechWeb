@@ -44,7 +44,7 @@ interface ApiState {
   /** Credenziali valide per il login (username -> password). */
   validUsers: Record<string, string>;
   nextGameId: number;
-  /** Titolo restituito da /w/api.php (random start). */
+  /** Pagina di partenza scelta dal backend (mock di /api/game/start). */
   startTitle: string;
   inProgress: GameSummary[];
   leaderboard: LeaderboardEntry[];
@@ -164,13 +164,13 @@ export async function mockApi(page: Page, state: ApiState): Promise<void> {
     const completeMatch = path.match(/^\/api\/game\/(\d+)\/complete$/);
     const stepMatch = path.match(/^\/api\/game\/(\d+)\/step$/);
 
-    // POST /api/game/start
+    // POST /api/game/start: come il backend reale, il mock sceglie lui la
+    // pagina di partenza (startTitle) e ignora qualunque body dal client.
     if (method === 'POST' && path === '/api/game/start') {
-      const body = route.request().postDataJSON() as { startUrl: string };
       const game: GameSummary = {
         id: state.nextGameId++,
         username: state.username ?? 'anonimo',
-        startUrl: body.startUrl,
+        startUrl: state.startTitle,
         numberOfSteps: 0,
         gameStatus: 'InProgress',
         timeElapsedSeconds: 0,
@@ -260,13 +260,6 @@ export async function mockApi(page: Page, state: ApiState): Promise<void> {
   await page.route('**/w/api.php**', async (route) => {
     const url = new URL(route.request().url());
     const action = url.searchParams.get('action');
-
-    if (action === 'query') {
-      await fulfillJson(route, {
-        query: { random: [{ id: 1, title: state.startTitle }] },
-      });
-      return;
-    }
 
     if (action === 'parse') {
       const pageTitle = url.searchParams.get('page') ?? state.startTitle;

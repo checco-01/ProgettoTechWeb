@@ -59,14 +59,7 @@ public class GameService {
     }
 
     @Transactional
-    public StartGameResponse startGame(String username, StartGameRequest request) {
-        // Anti-cheat: non si può partire dall'obiettivo, nemmeno da un suo redirect
-        String resolvedStart =
-                wikipediaClient.resolveTitle(request.getStartUrl()).orElse(request.getStartUrl());
-        if (WikipediaClient.normalize(resolvedStart).equalsIgnoreCase(WikipediaClient.normalize(TARGET_PAGE))) {
-            throw new IllegalArgumentException("La pagina di partenza non può essere l'obiettivo");
-        }
-
+    public StartGameResponse startGame(String username) {
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -79,17 +72,26 @@ public class GameService {
 
         checkStartAllowed(username);
 
-        Game game = new Game(user, request.getStartUrl());
+        String startingAdress = wikipediaClient
+                .getRandomPage(TARGET_PAGE)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Impossibile ottenere una pagina casuale da Wikipedia. Riprova tra poco."));
+        String resolvedStart = wikipediaClient.resolveTitle(startingAdress).orElse(startingAdress);
+        if (WikipediaClient.normalize(resolvedStart).equalsIgnoreCase(WikipediaClient.normalize(TARGET_PAGE))) {
+            throw new IllegalStateException("La pagina di partenza non può essere l'obiettivo");
+        }
+
+        Game game = new Game(user, startingAdress);
         game = gameRepository.save(game);
 
-        GameStep step = new GameStep(game, 0, "", request.getStartUrl());
+        GameStep step = new GameStep(game, 0, "", startingAdress);
         gameStepRepository.save(step);
 
         return new StartGameResponse(game.getId(), game.getStartUrl());
     }
 
     @Transactional
-    public void recordStep(Long gameId, String username, StepRequest request) {
+    public void recordStep(Long gameId, String username, String stepRequest) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Game not found"));
 
         validateGameOwnership(game, username);
@@ -109,14 +111,14 @@ public class GameService {
                 .orElse(game.getStartUrl());
 
         // Anti-cheat: verifica che il link esista realmente nella pagina corrente
-        if (!wikipediaClient.hasLink(currentPage, request.getUrlTo())) {
+        if (!wikipediaClient.hasLink(currentPage, stepRequest)) {
             throw new IllegalArgumentException("Il link non esiste nella pagina corrente");
         }
 
         int stepNumber = game.getNumberOfSteps() + 1;
         game.setNumberOfSteps(stepNumber);
 
-        GameStep step = new GameStep(game, stepNumber, currentPage, request.getUrlTo());
+        GameStep step = new GameStep(game, stepNumber, currentPage, stepRequest);
         gameStepRepository.save(step);
 
         gameRepository.save(game);

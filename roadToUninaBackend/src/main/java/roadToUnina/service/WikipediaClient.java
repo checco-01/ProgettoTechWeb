@@ -32,6 +32,47 @@ public class WikipediaClient {
     }
 
     /**
+     * Restituisce una pagina casuale nel namespace articoli (ns=0), escludendo
+     * i redirect e il titolo {@code excludedTitle} (che il chiamante vuole
+     * evitare: la pagina obiettivo). Vuoto se l'API non risponde.
+     *
+     * <p>La scelta della pagina di partenza avviene qui, lato server: il
+     * client non può fornire una partenza "facile" né partire dall'obiettivo.
+     */
+    public Optional<String> getRandomPage(String excludedTitle) {
+        RandomResponse response;
+        try {
+            response = restClient
+                    .get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("action", "query")
+                            .queryParam("list", "random")
+                            .queryParam("rnnamespace", "0")
+                            .queryParam("rnfilterredir", "nonredirects")
+                            .queryParam("rnlimit", "5")
+                            .queryParam("formatversion", "2")
+                            .queryParam("format", "json")
+                            .queryParam("origin", "*")
+                            .build())
+                    .retrieve()
+                    .body(RandomResponse.class);
+        } catch (Exception e) {
+            // Fail-closed: se non possiamo scegliere una partenza casuale, rifiutiamo
+            return Optional.empty();
+        }
+
+        if (response == null || response.query() == null || response.query().random() == null) {
+            return Optional.empty();
+        }
+        return response.query().random().stream()
+                .map(RandomEntry::title)
+                .filter(title -> title != null && !title.isBlank())
+                .map(WikipediaClient::normalize)
+                .filter(title -> !title.equalsIgnoreCase(normalize(excludedTitle)))
+                .findFirst();
+    }
+
+    /**
      * Verifica che la pagina {@code fromPage} contenga un wikilink verso
      * {@code toPage} (i redirect vengono risolti, come nel frontend).
      */
@@ -111,4 +152,10 @@ public class WikipediaClient {
     private record Parse(String title, List<Link> links) {}
 
     private record Link(int ns, String title) {}
+
+    private record RandomResponse(RandomQuery query) {}
+
+    private record RandomQuery(List<RandomEntry> random) {}
+
+    private record RandomEntry(int id, int ns, String title) {}
 }

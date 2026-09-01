@@ -19,17 +19,6 @@ export class WikipediaService {
     return this.targetPage.replace(/_/g, ' ');
   }
 
-  getRandomStart(): Observable<string> {
-    const url = `${this.baseUrl}?action=query&list=random&rnnamespace=0&rnfilterredir=nonredirects&rnlimit=5&format=json&origin=*`;
-    return this.http.get<{ query: { random: { id: number; title: string }[] } }>(url).pipe(
-      map((res) => {
-        const titles = res.query.random.map((r) => r.title);
-        const valid = titles.find((t) => t !== this.targetPage.replace(/_/g, ' '));
-        return valid ?? titles[0];
-      }),
-    );
-  }
-
   getPage(title: string): Observable<WikiPage> {
     const url = `${this.baseUrl}?action=parse&page=${encodeURIComponent(title)}&prop=text|displaytitle&redirects=true&format=json&origin=*`;
     return this.http

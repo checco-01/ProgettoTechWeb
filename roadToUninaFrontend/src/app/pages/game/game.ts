@@ -45,10 +45,7 @@ export class GameComponent implements OnInit, OnDestroy {
     if (gameIdParam) {
       this.resumeGame(Number(gameIdParam));
     } else {
-      this.wikiService.getRandomStart().subscribe((startTitle) => {
-        this.startTitle.set(startTitle);
-        this.startGameAndLoad(startTitle);
-      });
+      this.startGameAndLoad();
     }
   }
 
@@ -81,13 +78,14 @@ export class GameComponent implements OnInit, OnDestroy {
     });
   }
 
-  private startGameAndLoad(title: string): void {
-    this.gameService.startGame(title).subscribe({
+  private startGameAndLoad(): void {
+    this.gameService.startGame().subscribe({
       next: (res) => {
         this.gameId = res.gameId;
         this.gameCreatedAt = new Date();
+        this.startTitle.set(res.startUrl);
         this.startTimer();
-        this.loadPage(title);
+        this.loadPage(res.startUrl);
       },
       error: (err) => this.handleApiError(err, 'Impossibile creare la partita sul server'),
     });
@@ -243,9 +241,6 @@ export class GameComponent implements OnInit, OnDestroy {
     this.gameCreatedAt = null;
     this.loadPageAttempts = 0;
 
-    this.wikiService.getRandomStart().subscribe((title) => {
-      this.startTitle.set(title);
-      this.startGameAndLoad(title);
-    });
+    this.startGameAndLoad();
   }
 }

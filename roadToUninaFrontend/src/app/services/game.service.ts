@@ -7,10 +7,6 @@ export interface StartGameResponse {
   startUrl: string;
 }
 
-export interface StepRequest {
-  urlTo: string;
-}
-
 export interface StepResponse {
   url: string;
   stepNumber: number;
@@ -39,10 +35,8 @@ export class GameService {
 
   constructor(private http: HttpClient) {}
 
-  startGame(startUrl: string): Observable<StartGameResponse> {
-    return this.http.post<StartGameResponse>(`${this.apiUrl}/start`, {
-      startUrl,
-    });
+  startGame(): Observable<StartGameResponse> {
+    return this.http.post<StartGameResponse>(`${this.apiUrl}/start`, null);
   }
 
   recordStep(gameId: number, urlTo: string): Observable<void> {

@@ -21,20 +21,22 @@ public class GameController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<?> startGame(@Valid @RequestBody StartGameRequest request, Authentication auth) {
+    public ResponseEntity<?> startGame(Authentication auth) {
         try {
-            StartGameResponse response = gameService.startGame(auth.getName(), request);
+            StartGameResponse response = gameService.startGame(auth.getName());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("error", e.getMessage()));
         }
     }
 
     @PostMapping("/{gameId}/step")
     public ResponseEntity<?> recordStep(
-            @PathVariable Long gameId, @Valid @RequestBody StepRequest request, Authentication auth) {
+            @PathVariable Long gameId, @Valid @RequestBody StepRequest stepRequest, Authentication auth) {
         try {
-            gameService.recordStep(gameId, auth.getName(), request);
+            gameService.recordStep(gameId, auth.getName(), stepRequest.getUrlTo());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
