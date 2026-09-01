@@ -13,31 +13,31 @@
 /* ---------- 1. DESIGN TOKENS ---------- */
 :root {
   /* Palette */
-  --color-primary: #1b415d;          /* blu brand (topbar, titoli) */
-  --color-secondary: #2a5f82;        /* blu medio (hover, bordi, accenti) */
+  --color-primary: #1b415d; /* blu brand (topbar, titoli) */
+  --color-secondary: #2a5f82; /* blu medio (hover, bordi, accenti) */
   --color-text: #222;
-  --color-text-muted: #5a6c7d;       /* testo secondario */
-  --color-text-faint: #8899aa;       /* testo attenuato */
-  --color-text-light: #9fb0c0;       /* frecce/icone */
-  --color-border: #e1e5ee;           /* bordi input/card */
-  --color-border-soft: #eef1f6;      /* righe tabella */
+  --color-text-muted: #5a6c7d; /* testo secondario */
+  --color-text-faint: #8899aa; /* testo attenuato */
+  --color-text-light: #9fb0c0; /* frecce/icone */
+  --color-border: #e1e5ee; /* bordi input/card */
+  --color-border-soft: #eef1f6; /* righe tabella */
   --color-bg: #fff;
-  --color-bg-soft: #fafbfd;          /* sfondo card */
-  --color-bg-tint: #f0f4f8;          /* sfondo evidenziato */
-  --color-bg-tint-strong: #d9e2ec;   /* sfondo hero */
+  --color-bg-soft: #fafbfd; /* sfondo card */
+  --color-bg-tint: #f0f4f8; /* sfondo evidenziato */
+  --color-bg-tint-strong: #d9e2ec; /* sfondo hero */
 
   /* Errori / pericolo */
-  --color-danger: #b3402a;           /* rosso errori */
-  --color-danger-dark: #c0392b;      /* rosso scuro (btn danger) */
-  --color-danger-soft: #ff6b6b;      /* rosso tenue su topbar scuro */
-  --color-danger-text: #dc3545;      /* validazione form */
-  --color-error-bg: #fdecea;         /* sfondo messaggi di errore */
+  --color-danger: #b3402a; /* rosso errori */
+  --color-danger-dark: #c0392b; /* rosso scuro (btn danger) */
+  --color-danger-soft: #ff6b6b; /* rosso tenue su topbar scuro */
+  --color-danger-text: #dc3545; /* validazione form */
+  --color-error-bg: #fdecea; /* sfondo messaggi di errore */
   --color-error-border: #f8bbd0;
-  --color-error-soft-bg: #fce4ec;    /* sfondo alert error */
+  --color-error-soft-bg: #fce4ec; /* sfondo alert error */
   --color-error-soft-text: #c62828;
 
   /* Accenti */
-  --color-gold: #ffd700;             /* nome pagina target */
+  --color-gold: #ffd700; /* nome pagina target */
 
   /* Gradient e ombre */
   --gradient-primary: linear-gradient(135deg, #1b415d 0%, #2a5f82 100%);
