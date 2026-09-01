@@ -40,9 +40,9 @@ public class WikipediaClient {
      * client non può fornire una partenza "facile" né partire dall'obiettivo.
      */
     public Optional<String> getRandomPage(String excludedTitle) {
-        RandomResponse response;
+        RandomQuery randomQuery;
         try {
-            response = restClient
+            randomQuery = restClient
                     .get()
                     .uri(uriBuilder -> uriBuilder
                             .queryParam("action", "query")
@@ -55,16 +55,16 @@ public class WikipediaClient {
                             .queryParam("origin", "*")
                             .build())
                     .retrieve()
-                    .body(RandomResponse.class);
+                    .body(RandomQuery.class);
         } catch (Exception e) {
             // Fail-closed: se non possiamo scegliere una partenza casuale, rifiutiamo
             return Optional.empty();
         }
 
-        if (response == null || response.query() == null || response.query().random() == null) {
+        if (randomQuery == null || randomQuery.random() == null) {
             return Optional.empty();
         }
-        return response.query().random().stream()
+        return randomQuery.random().stream()
                 .map(RandomEntry::title)
                 .filter(title -> title != null && !title.isBlank())
                 .map(WikipediaClient::normalize)
@@ -112,9 +112,9 @@ public class WikipediaClient {
     }
 
     private Optional<Parse> fetchParse(String title) {
-        ParseResponse response;
+        Parse parse;
         try {
-            response = restClient
+            parse = restClient
                     .get()
                     .uri(uriBuilder -> uriBuilder
                             .queryParam("action", "parse")
@@ -126,16 +126,16 @@ public class WikipediaClient {
                             .queryParam("origin", "*")
                             .build())
                     .retrieve()
-                    .body(ParseResponse.class);
+                    .body(Parse.class);
         } catch (Exception e) {
             // Fail-closed: se non possiamo verificare, rifiutiamo
             return Optional.empty();
         }
 
-        if (response == null || response.parse() == null) {
+        if (parse == null) {
             return Optional.empty();
         }
-        return Optional.of(response.parse());
+        return Optional.of(parse);
     }
 
     private static boolean isExcluded(String title) {
@@ -147,13 +147,9 @@ public class WikipediaClient {
         return title == null ? "" : title.replace('_', ' ').trim();
     }
 
-    private record ParseResponse(Parse parse) {}
-
     private record Parse(String title, List<Link> links) {}
 
     private record Link(int ns, String title) {}
-
-    private record RandomResponse(RandomQuery query) {}
 
     private record RandomQuery(List<RandomEntry> random) {}
 
