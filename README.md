@@ -21,36 +21,24 @@ Progetto d'esame di **Tecnologie Web** — pensato per girare in **locale**.
 - **JDK 25** (consigliato: Corretto 25)
 - **Node.js ≥ 20** e **npm** (testato con Node 22)
 - **MySQL 8+** avviato in locale
-- Maven viene scaricato automaticamente dal wrapper (`mvnw`)
 
 ## 1) Preparazione del database
 
-Crea il database e l'utente MySQL (o usa il tuo utente root):
+Assicurati di avere un utente MySQL con i permessi di creazione, sostitusci `TuoUtente` e `TuaPassword` con i tuoi valori
+nel file application properties.example.
 
-```sql
-CREATE DATABASE roadtounina;
-CREATE USER 'RoadToUnina'@'localhost' IDENTIFIED BY 'la_tua_password';
-GRANT ALL PRIVILEGES ON roadtounina.* TO 'RoadToUnina'@'localhost';
-FLUSH PRIVILEGES;
-```
 
 ## 2) Configurazione del backend
 
-> ⚠️ **Importante:** `roadToUninaBackend/src/main/resources/application.properties`
-> è **escluso da Git** (contiene credenziali). Dopo un clone va creato dal template:
-
 ```bash
 cd roadToUninaBackend/src/main/resources
-cp application.properties.example application.properties
 ```
 
-Poi apri il file e imposta **la password del tuo utente MySQL**
-(`spring.datasource.password`). Il segreto JWT di default nel template è un dummy
-valido per lo sviluppo locale: se vuoi cambiarlo, generane uno nuovo con:
-
+Nel file application.properities.example Il segreto JWT di default nel template è un dummy, generane uno nuovo con:
 ```bash
 openssl rand -base64 64
 ```
+Dopo averlo generato, rinomina il file in `application.properties` e sostituisci il valore TuoJWTSecret con quello appena generato.
 
 ## 3) Seed (dati di esempio)
 
@@ -62,24 +50,10 @@ crea le tabelle, oppure assicurati che esistano già. Poi esegui, dalla cartella
 `roadToUninaBackend/sql`:
 
 ```bash
-mysql -u RoadToUnina -proadtounina < seed_all.sql
+mysql -u TuoUtente -pTuaPassword < seed_all.sql
 ```
+5 Utenti creati (password per tutti: `Password1!`):
 
-(Oppure, in alternativa, lancia in sequenza `00_reset_seed.sql`,
-`01_seed_users.sql`, `02_seed_games.sql`, `03_seed_game_steps.sql`.)
-
-Utenti creati (password per tutti: `Password1!`):
-
-| Username | Partite |
-|---|---|
-| mario.rossi | 5 completate |
-| lucia.bianchi | 5 completate |
-| giulia.verdi | 5 completate |
-| francesco.esposito | 5 completate |
-| anna.russo | 5 completate |
-
-Ogni partita termina sull'obiettivo del gioco (`Università_degli_Studi_di_Napoli_Federico_II`)
-con percorsi realistici su Wikipedia (da 1 a 5 passi).
 
 ## 4) Avvio del backend
 
@@ -89,10 +63,6 @@ cd roadToUninaBackend
 ```
 
 Il server parte su `http://localhost:8080`. Verifica:
-
-```bash
-curl http://localhost:8080/api/game/leaderboard
-```
 
 ## 5) Avvio del frontend
 
@@ -116,13 +86,3 @@ cd roadToUninaFrontend && npm test
 # Frontend: test E2E (Playwright, backend e Wikipedia mappati, nessun servizio esterno)
 cd roadToUninaFrontend && npm run test:e2e
 ```
-
-## Troubleshooting
-
-| Problema | Soluzione |
-|---|---|
-| `Cannot connect to MySQL` / `Communications link failure` | MySQL non è attivo o credenziali sbagliate in `application.properties` |
-| Errore all'avvio su `app.jwt.secret` | Imposta un segreto di almeno 32 byte in `application.properties` (sezione 2) |
-| Errore CORS nella console del browser | Frontend e backend devono essere su `localhost:4200` e `localhost:8080` |
-| Porta 8080/4200 già occupata | Chiudi il processo precedente (`lsof -i :8080`) o cambia `server.port` |
-| Seed: `Table 'roadtounina.users' doesn't exist` | Avvia prima il backend (Hibernate crea le tabelle) e poi lancia `seed_all.sql` |
