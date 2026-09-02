@@ -40,9 +40,9 @@ public class WikipediaClient {
      * client non può fornire una partenza "facile" né partire dall'obiettivo.
      */
     public Optional<String> getRandomPage(String excludedTitle) {
-        RandomQuery randomQuery;
+        RandomQueryResponse randomQueryResponse;
         try {
-            randomQuery = restClient
+            randomQueryResponse = restClient
                     .get()
                     .uri(uriBuilder -> uriBuilder
                             .queryParam("action", "query")
@@ -55,16 +55,18 @@ public class WikipediaClient {
                             .queryParam("origin", "*")
                             .build())
                     .retrieve()
-                    .body(RandomQuery.class);
+                    .body(RandomQueryResponse.class);
         } catch (Exception e) {
             // Fail-closed: se non possiamo scegliere una partenza casuale, rifiutiamo
             return Optional.empty();
         }
 
-        if (randomQuery == null || randomQuery.random() == null) {
+        if (randomQueryResponse == null
+                || randomQueryResponse.query() == null
+                || randomQueryResponse.query().random() == null) {
             return Optional.empty();
         }
-        return randomQuery.random().stream()
+        return randomQueryResponse.query().random().stream()
                 .map(RandomEntry::title)
                 .filter(title -> title != null && !title.isBlank())
                 .map(WikipediaClient::normalize)
@@ -87,7 +89,7 @@ public class WikipediaClient {
      * non esiste o l'API non risponde.
      */
     public Optional<String> resolveTitle(String title) {
-        return fetchParse(title).map(Parse::title);
+        return fetchParse(title).map(Parse::title).filter(resolved -> resolved != null && !resolved.isBlank());
     }
 
     /**
@@ -112,9 +114,9 @@ public class WikipediaClient {
     }
 
     private Optional<Parse> fetchParse(String title) {
-        Parse parse;
+        ParseResponse parseResponse;
         try {
-            parse = restClient
+            parseResponse = restClient
                     .get()
                     .uri(uriBuilder -> uriBuilder
                             .queryParam("action", "parse")
@@ -126,16 +128,16 @@ public class WikipediaClient {
                             .queryParam("origin", "*")
                             .build())
                     .retrieve()
-                    .body(Parse.class);
+                    .body(ParseResponse.class);
         } catch (Exception e) {
             // Fail-closed: se non possiamo verificare, rifiutiamo
             return Optional.empty();
         }
 
-        if (parse == null) {
+        if (parseResponse == null || parseResponse.parse() == null) {
             return Optional.empty();
         }
-        return Optional.of(parse);
+        return Optional.of(parseResponse.parse());
     }
 
     private static boolean isExcluded(String title) {
@@ -147,11 +149,20 @@ public class WikipediaClient {
         return title == null ? "" : title.replace('_', ' ').trim();
     }
 
+    /**
+     * Involucro della risposta di {@code action=parse}: l'API restituisce
+     * titolo e link dentro la chiave {@code parse}.
+     */
+    private record ParseResponse(Parse parse) {}
+
     private record Parse(String title, List<Link> links) {}
 
     private record Link(int ns, String title) {}
 
-    private record RandomQuery(List<RandomEntry> random) {}
+    /** Involucro di {@code action=query&list=random}: i risultati stanno in {@code query.random}. */
+    private record RandomQueryResponse(QueryData query) {}
+
+    private record QueryData(List<RandomEntry> random) {}
 
     private record RandomEntry(int id, int ns, String title) {}
 }

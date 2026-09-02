@@ -95,7 +95,14 @@ export class GameComponent implements OnInit, OnDestroy {
       this.handleAuthError();
       return;
     }
-    this.errorMessage.set(fallbackMessage + (err.status ? ` (HTTP ${err.status})` : ''));
+    // Se il backend ha risposto con {"error": "..."}, mostra quel messaggio
+    // (più specifico del fallback generico).
+    const serverMessage = err?.error?.error;
+    if (typeof serverMessage === 'string' && serverMessage.trim()) {
+      this.errorMessage.set(serverMessage);
+    } else {
+      this.errorMessage.set(fallbackMessage + (err.status ? ` (HTTP ${err.status})` : ''));
+    }
     this.loading.set(false);
   }
 
