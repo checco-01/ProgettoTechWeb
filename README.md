@@ -30,22 +30,11 @@ nel file application properties.example.
 
 ## 2) Configurazione del backend
 
-```bash
-cd roadToUninaBackend/src/main/resources
-```
-
 Nel file `application.properties.example` il segreto JWT di default nel template è un dummy, generane uno nuovo con:
 
 **Bash / Git Bash / cmd:**
 ```bash
 openssl rand -base64 64
-```
-
-**PowerShell (se OpenSSL non è installato):**
-```powershell
-$bytes = New-Object byte[] 64
-[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
-[Convert]::ToBase64String($bytes)
 ```
 
 Dopo averlo generato, rinomina il file in `application.properties` e sostituisci il valore `TuoJWTSecret` con quello appena generato.
@@ -63,7 +52,7 @@ cd roadToUninaBackend
 cd roadToUninaBackend
 .\mvnw.cmd spring-boot:run
 ```
-
+Il server parte su `http://localhost:8080`
 
 ## 4) Seed (dati di esempio)
 
@@ -90,9 +79,6 @@ Get-Content seed_all.sql | mysql -u TuoUtente -pTuaPassword
 
 5 Utenti creati (password per tutti: `Password1!`):
 
-
-
-Il server parte su `http://localhost:8080`. Verifica:
 
 ## 5) Avvio del frontend
 
